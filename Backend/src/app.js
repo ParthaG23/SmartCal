@@ -7,30 +7,27 @@ const compression = require("compression");
 const morgan      = require("morgan");
 
 const calculatorRoutes = require("./routes/calculatorRoutes");
+const authRoutes       = require("./routes/authRoutes");
 const errorHandler     = require("./middleware/errorMiddleware");
 const requestLogger    = require("./middleware/requestLogger");
 const { getStatus }    = require("./config/db");
 
-const app  = express();
+const app    = express();
 const isProd = process.env.NODE_ENV === "production";
 const isDev  = !isProd;
 
 /* ============================================================
    SECURITY — Helmet
-   Sets safe HTTP headers. Content-Security-Policy is relaxed
-   here because this is a pure JSON API (no HTML served).
 ============================================================ */
 app.use(
   helmet({
-    contentSecurityPolicy: false,   // not serving HTML
+    contentSecurityPolicy:    false,
     crossOriginEmbedderPolicy: false,
   })
 );
 
 /* ============================================================
-   CORS
-   Dev  : allow all origins
-   Prod : only allow origins listed in ALLOWED_ORIGINS env var
+   CORS — must be before routes
 ============================================================ */
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",").map(o => o.trim())
@@ -40,82 +37,65 @@ const corsOptions = {
   origin: isDev
     ? "*"
     : (origin, callback) => {
-        // allow requests with no origin (e.g. mobile apps, Postman, curl)
         if (!origin) return callback(null, true);
         if (allowedOrigins.includes(origin)) return callback(null, true);
         callback(new Error(`CORS: origin "${origin}" not allowed`));
       },
-  methods:          ["GET", "POST", "DELETE", "OPTIONS"],
-  allowedHeaders:   ["Content-Type", "Authorization"],
-  exposedHeaders:   ["X-Request-Id"],
-  credentials:      true,
-  optionsSuccessStatus: 200,   // some legacy browsers choke on 204
+  methods:             ["GET", "POST", "DELETE", "OPTIONS"],
+  allowedHeaders:      ["Content-Type", "Authorization"],  // ✅ Authorization allowed
+  exposedHeaders:      ["X-Request-Id"],
+  credentials:         true,
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
 
 /* ============================================================
+   BODY PARSING — must be before routes
+============================================================ */
+app.use(express.json({ limit: "50kb" }));
+app.use(express.urlencoded({ extended: true, limit: "50kb" }));
+
+/* ============================================================
+   COMPRESSION + LOGGING
+============================================================ */
+app.use(compression());
+app.use(morgan(isDev ? "dev" : "combined"));
+app.use(requestLogger);
+
+/* ============================================================
    RATE LIMITING
-   Requires: npm install express-rate-limit
-   Soft-limits per IP to prevent abuse.
-   Separate limits for general API vs heavy calculation routes.
 ============================================================ */
 let apiLimiter, calcLimiter;
 try {
   const rateLimit = require("express-rate-limit");
 
-  // 200 requests per 15 min per IP (all routes)
   apiLimiter = rateLimit({
-    windowMs:         15 * 60 * 1000,
-    max:              200,
-    standardHeaders:  true,
-    legacyHeaders:    false,
+    windowMs:        15 * 60 * 1000,
+    max:             200,
+    standardHeaders: true,
+    legacyHeaders:   false,
     message: { success: false, message: "Too many requests — please slow down" },
   });
 
-  // 60 calculations per 15 min per IP
   calcLimiter = rateLimit({
-    windowMs:         15 * 60 * 1000,
-    max:              60,
-    standardHeaders:  true,
-    legacyHeaders:    false,
+    windowMs:        15 * 60 * 1000,
+    max:             60,
+    standardHeaders: true,
+    legacyHeaders:   false,
     message: { success: false, message: "Calculation limit reached — try again later" },
   });
 } catch {
-  // express-rate-limit not installed — skip silently in dev
   console.warn("[App] express-rate-limit not found — rate limiting disabled");
   apiLimiter  = (req, res, next) => next();
   calcLimiter = (req, res, next) => next();
 }
 
 app.use("/api", apiLimiter);
-app.use("/api/calculators/:type", calcLimiter);  // tighter limit on POST :type
-
-/* ============================================================
-   BODY PARSING
-   Limit payload size to prevent memory-exhaustion attacks.
-============================================================ */
-app.use(express.json({ limit: "50kb" }));
-app.use(express.urlencoded({ extended: true, limit: "50kb" }));
-
-/* ============================================================
-   COMPRESSION
-   Skips compression for small responses (< 1 KB) automatically.
-============================================================ */
-app.use(compression());
-
-/* ============================================================
-   LOGGING
-   Dev : colorized dev output
-   Prod: combined format (Apache-style, good for log aggregators)
-============================================================ */
-app.use(morgan(isDev ? "dev" : "combined"));
-app.use(requestLogger);
+app.use("/api/calculators/:type", calcLimiter);
 
 /* ============================================================
    HEALTH CHECK
-   GET /api/health  —  no auth, no rate limit
-   Returns DB status + uptime. Useful for Docker / Railway.
 ============================================================ */
 app.get("/api/health", (req, res) => {
   const db         = getStatus();
@@ -132,12 +112,13 @@ app.get("/api/health", (req, res) => {
 });
 
 /* ============================================================
-   ROUTES
+   ROUTES — after all middleware        ✅
 ============================================================ */
-app.use("/api/calculators", calculatorRoutes);
+app.use("/api/auth",        authRoutes);        // ✅ mounted once
+app.use("/api/calculators", calculatorRoutes);  // ✅ mounted once
 
 /* ============================================================
-   404 — catch any unmatched route before the error handler
+   404
 ============================================================ */
 app.use((req, res) => {
   res.status(404).json({

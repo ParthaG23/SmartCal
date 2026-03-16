@@ -3,40 +3,25 @@
 const History = require("../models/historyModel");
 const engine  = require("../services/calculatorEngine");
 
-/* ============================================================
-   HELPER: extract a one-line summary from any result shape
-   Used as the display value in the History list.
-============================================================ */
+/* ── Summary helper ──────────────────────────────────────── */
 function buildSummary(result) {
   if (result === null || result === undefined) return "";
-
-  // plain scalar
   if (typeof result !== "object") return String(result);
-
-  // array of { label, value } or plain values
   if (Array.isArray(result)) {
     const first = result[0];
     if (first && typeof first === "object") return String(first.value ?? "");
     return String(first ?? "");
   }
-
-  // object: return the first value
   const firstVal = Object.values(result)[0];
-
-  // skip nested objects/arrays (e.g. yearly_breakdown) as the summary
   if (firstVal !== null && typeof firstVal === "object") {
     const flat = Object.values(result).find(v => typeof v !== "object");
     return flat !== undefined ? String(flat) : "";
   }
-
   return String(firstVal ?? "");
 }
 
-
 /* ============================================================
    GET /api/calculators
-   Returns all calculator metadata (name, slug, category, fields[])
-   driven entirely by the engine -- no hardcoded maps needed.
 ============================================================ */
 exports.getCalculators = (req, res) => {
   try {
@@ -55,10 +40,8 @@ exports.getCalculators = (req, res) => {
   }
 };
 
-
 /* ============================================================
    GET /api/calculators/categories
-   Returns calculators grouped by category.
 ============================================================ */
 exports.getCategories = (req, res) => {
   try {
@@ -77,11 +60,8 @@ exports.getCategories = (req, res) => {
   }
 };
 
-
 /* ============================================================
    GET /api/calculators/:type
-   Returns metadata for a single calculator (fields, description).
-   Used by the frontend to render dynamic forms.
 ============================================================ */
 exports.getCalculator = (req, res) => {
   const { type } = req.params;
@@ -100,23 +80,14 @@ exports.getCalculator = (req, res) => {
   });
 };
 
-
 /* ============================================================
    POST /api/calculators/:type
-   Runs a calculation, saves to history, returns result.
-
-   Request body (JSON):
-     Field values defined in the calculator fields[].
-     Unit selections use the convention:  fieldName_unit
-     Example: { weight: 154, weight_unit: "lb", height: 175 }
-     The engine converts units before calling run().
 ============================================================ */
 exports.calculate = async (req, res, next) => {
   try {
     const { type }  = req.params;
     const rawInputs = req.body ?? {};
 
-    // 1. Check calculator exists before doing anything
     if (!engine.exists(type)) {
       return res.status(404).json({
         success: false,
@@ -124,10 +95,8 @@ exports.calculate = async (req, res, next) => {
       });
     }
 
-    // 2. Run via engine (unit conversion + validation inside)
     const envelope = engine.runCalculator(type, rawInputs);
 
-    // 3. Handle engine-level errors
     if (!envelope.ok) {
       const statusCode =
         envelope.error.code === "NOT_FOUND"        ? 404 :
@@ -142,12 +111,12 @@ exports.calculate = async (req, res, next) => {
 
     const result = envelope.data.result;
 
-    // 4. Persist to history
-    // History failure must NEVER break the calculation response
+    // ✅ save history with userId from JWT (null if guest)
     let historyId = null;
     try {
       const calcMeta = engine.getOne(type) ?? {};
       const record   = await History.create({
+        userId:         req.user?.id ?? null,   // ✅ per-user
         calculatorType: type,
         calculatorName: calcMeta.name     ?? type,
         category:       calcMeta.category ?? "",
@@ -160,7 +129,6 @@ exports.calculate = async (req, res, next) => {
       console.error("[Controller] History save failed:", histErr.message);
     }
 
-    // 5. Success response
     return res.status(200).json({
       success:    true,
       calculator: type,
@@ -176,20 +144,22 @@ exports.calculate = async (req, res, next) => {
   }
 };
 
-
 /* ============================================================
    GET /api/calculators/history
-   Returns all history records, newest first.
-   Query params: ?page=1&limit=20&type=bmi
+   ✅ only returns current user's history
 ============================================================ */
 exports.getHistory = async (req, res, next) => {
   try {
-    const limit  = Math.min(parseInt(req.query.limit) || 20,  200);
-    const page   = Math.max(parseInt(req.query.page)  || 1,   1);
+    const limit  = Math.min(parseInt(req.query.limit) || 20, 200);
+    const page   = Math.max(parseInt(req.query.page)  || 1,  1);
     const skip   = (page - 1) * limit;
-    const filter = { deleted: false };
 
-    // optional filter by calculator type
+    // ✅ scope to logged-in user
+    const filter = {
+      deleted: false,
+      userId:  req.user.id,
+    };
+
     if (req.query.type) filter.calculatorType = req.query.type;
 
     const [records, total] = await Promise.all([
@@ -215,15 +185,15 @@ exports.getHistory = async (req, res, next) => {
   }
 };
 
-
 /* ============================================================
    GET /api/calculators/history/:id
-   Returns a single history record by ID.
+   ✅ only returns record if it belongs to current user
 ============================================================ */
 exports.getHistoryById = async (req, res, next) => {
   try {
     const record = await History.findOne({
       _id:     req.params.id,
+      userId:  req.user.id,     // ✅ ownership check
       deleted: false,
     }).lean();
 
@@ -244,15 +214,18 @@ exports.getHistoryById = async (req, res, next) => {
   }
 };
 
-
 /* ============================================================
    DELETE /api/calculators/history/:id
-   Soft-deletes a single history record.
+   ✅ only deletes if record belongs to current user
 ============================================================ */
 exports.deleteHistory = async (req, res, next) => {
   try {
     const record = await History.findOneAndUpdate(
-      { _id: req.params.id, deleted: false },
+      {
+        _id:     req.params.id,
+        userId:  req.user.id,   // ✅ ownership check
+        deleted: false,
+      },
       { deleted: true },
       { new: true }
     );
@@ -274,15 +247,17 @@ exports.deleteHistory = async (req, res, next) => {
   }
 };
 
-
 /* ============================================================
    DELETE /api/calculators/history
-   Soft-deletes ALL history records.
+   ✅ only clears current user's history
 ============================================================ */
 exports.clearHistory = async (req, res, next) => {
   try {
     const { modifiedCount } = await History.updateMany(
-      { deleted: false },
+      {
+        userId:  req.user.id,   // ✅ scoped to user
+        deleted: false,
+      },
       { deleted: true }
     );
 

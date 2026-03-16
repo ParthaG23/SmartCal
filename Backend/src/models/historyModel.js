@@ -4,48 +4,53 @@ const mongoose = require("mongoose");
 
 const historySchema = new mongoose.Schema(
   {
+    /* ── User who ran the calculation ───────────────────── */
+    userId: {
+      type:  mongoose.Schema.Types.ObjectId,
+      ref:   "User",
+      index: true,
+      default: null,   // null = anonymous (guest calculation)
+    },
+
     /* ── Calculator identity ─────────────────────────────── */
     calculatorType: {
       type:     String,
       required: true,
       trim:     true,
-      index:    true,          // fast filter by type on History page
+      index:    true,
     },
 
     calculatorName: {
-      type:    String,         // e.g. "BMI Calculator"  (stored for display)
+      type:    String,
       trim:    true,
       default: "",
     },
 
     category: {
-      type:    String,         // e.g. "Health", "Finance"
+      type:    String,
       trim:    true,
       default: "",
     },
 
-    /* ── Raw inputs the user submitted ──────────────────── */
+    /* ── Raw inputs ──────────────────────────────────────── */
     inputs: {
-      type:     mongoose.Schema.Types.Mixed,   // any key/value shape
+      type:     mongoose.Schema.Types.Mixed,
       required: true,
     },
 
-    /* ── Result from calculator run() ───────────────────── */
+    /* ── Result ──────────────────────────────────────────── */
     result: {
-      type:     mongoose.Schema.Types.Mixed,   // scalar | object | array
+      type:     mongoose.Schema.Types.Mixed,
       required: true,
     },
 
-    /* ── Optional: primary display value for history list ─
-       e.g. "22.86" for BMI, "₹16,453.09" for CI
-       Filled by the controller so the History page
-       doesn't have to parse the full result object.      */
+    /* ── Display summary ─────────────────────────────────── */
     summary: {
       type:    String,
       default: "",
     },
 
-    /* ── Soft-delete flag ───────────────────────────────── */
+    /* ── Soft-delete ─────────────────────────────────────── */
     deleted: {
       type:    Boolean,
       default: false,
@@ -53,15 +58,16 @@ const historySchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true,          // createdAt + updatedAt auto-managed
-    versionKey: false,         // remove __v field
+    timestamps: true,
+    versionKey: false,
   }
 );
 
-/* ── Compound index: fast "my recent BMI calculations" ── */
-historySchema.index({ calculatorType: 1, createdAt: -1 });
+/* ── Compound indexes ────────────────────────────────────── */
+historySchema.index({ userId: 1, createdAt: -1 });           // my recent history
+historySchema.index({ userId: 1, calculatorType: 1, createdAt: -1 }); // my recent BMI
 
-/* ── Instance helper: human-readable label ───────────── */
+/* ── Instance helper ─────────────────────────────────────── */
 historySchema.methods.toDisplay = function () {
   return {
     id:             this._id,
@@ -75,7 +81,7 @@ historySchema.methods.toDisplay = function () {
   };
 };
 
-/* ── Static: non-deleted records only ───────────────── */
+/* ── Static helper ───────────────────────────────────────── */
 historySchema.statics.findActive = function (filter = {}) {
   return this.find({ ...filter, deleted: false }).sort({ createdAt: -1 });
 };
