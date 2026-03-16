@@ -6,21 +6,6 @@ It provides a collection of calculators for **finance, health, math, science, an
 The platform dynamically loads calculator definitions from the backend so new calculators can be added without modifying the frontend.
 
 ---
-
-## 🚀 Features
-
-* Multiple calculator categories
-* Dynamic calculator configuration from API
-* Responsive premium UI
-* Dark / Light theme support
-* Calculator history
-* Unit conversion support
-* Backend API for calculations
-* MongoDB database for calculator metadata
-* Secure API with Helmet, CORS, and rate limiting
-* Production deployment ready
-
----
 ## 🌐 Live Demo
 
 You can try the deployed SmartCalc platform here:
@@ -38,6 +23,24 @@ https://smartcal-rusc.onrender.com/api/calculators
 ```
 
 ⚠️ Note: The backend runs on Render's free tier, so the first request may take **30–50 seconds** if the server was inactive.
+
+---
+
+## 🚀 Features
+
+* Multiple calculator categories
+* Dynamic calculator configuration from API
+* Responsive premium UI
+* Dark / Light theme support
+* Calculator history
+* Unit conversion support
+* Backend API for calculations
+* MongoDB database for calculator metadata
+* Secure API with Helmet, CORS, and rate limiting
+* Production deployment ready
+
+---
+
 
 ## 🧱 Tech Stack
 
