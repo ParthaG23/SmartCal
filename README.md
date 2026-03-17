@@ -75,33 +75,113 @@ https://smartcal-rusc.onrender.com/api/calculators
 ## 📂 Project Structure
 
 ```
-SmartCal
+SMARTCAL/
 │
-├── backend
-│   ├── src
-│   │   ├── config
-│   │   │   └── db.js
-│   │   ├── routes
-│   │   │   └── calculatorRoutes.js
-│   │   ├── middleware
-│   │   ├── services
-│   │   └── app.js
+├── backend/
+│   ├── src/
+│   │   ├── config/              # Config files
+│   │   │   ├── db.js
+│   │   │   ├── firebaseAdmin.js
+│   │   │   └── cors.js
+│   │   │
+│   │   ├── controllers/         # Route logic
+│   │   │   ├── authController.js
+│   │   │   ├── calculatorController.js
+│   │   │   └── historyController.js
+│   │   │
+│   │   ├── routes/              # API routes
+│   │   │   ├── authRoutes.js
+│   │   │   ├── calculatorRoutes.js
+│   │   │   └── historyRoutes.js
+│   │   │
+│   │   ├── middlewares/         # Middleware
+│   │   │   ├── authMiddleware.js
+│   │   │   ├── firebaseAuth.js
+│   │   │   └── errorHandler.js
+│   │   │
+│   │   ├── models/              # MongoDB models
+│   │   │   ├── userModel.js
+│   │   │   └── historyModel.js
+│   │   │
+│   │   ├── services/            # Business logic
+│   │   │   ├── calculator/
+│   │   │   │   ├── emi.js
+│   │   │   │   ├── factorial.js
+│   │   │   │   ├── fuelCost.js
+│   │   │   │   ├── gst.js
+│   │   │   │   ├── percentage.js
+│   │   │   │   ├── simpleInterest.js
+│   │   │   │   ├── temperature.js
+│   │   │   │   ├── tip.js
+│   │   │   │   └── index.js      # export all calculators
+│   │   │   │
+│   │   │   └── calculatorEngine.js
+│   │   │
+│   │   ├── utils/               # Helpers
+│   │   │   ├── logger.js
+│   │   │   ├── response.js
+│   │   │   └── validators.js
+│   │   │
+│   │   ├── constants/           # Static configs
+│   │   │   └── calculatorTypes.js
+│   │   │
+│   │   ├── app.js               # Express app
+│   │   └── server.js            # Server start
 │   │
-│   ├── server.js
-│   └── package.json
+│   ├── .env
+│   ├── package.json
+│   └── .gitignore
 │
-├── frontend
-│   ├── src
-│   │   ├── components
-│   │   ├── pages
-│   │   ├── services
-│   │   │   └── api.js
+├── frontend/
+│   ├── src/
+│   │   ├── assets/
+│   │   │
+│   │   ├── components/          # Reusable UI
+│   │   │   ├── ui/
+│   │   │   ├── layout/
+│   │   │   └── common/
+│   │   │
+│   │   ├── pages/               # Pages
+│   │   │   ├── Home.jsx
+│   │   │   ├── Calculator.jsx
+│   │   │   ├── History.jsx
+│   │   │   ├── Login.jsx
+│   │   │   └── Dashboard.jsx
+│   │   │
+│   │   ├── features/            # Feature-based logic
+│   │   │   ├── calculator/
+│   │   │   ├── auth/
+│   │   │   └── history/
+│   │   │
+│   │   ├── context/             # React Context
+│   │   │   └── AuthContext.jsx
+│   │   │
+│   │   ├── hooks/
+│   │   │   └── useAuth.js
+│   │   │
+│   │   ├── services/            # API calls
+│   │   │   ├── api.js
+│   │   │   ├── authService.js
+│   │   │   └── calculatorService.js
+│   │   │
+│   │   ├── config/
+│   │   │   └── firebase.js
+│   │   │
+│   │   ├── utils/
+│   │   │   └── helpers.js
+│   │   │
+│   │   ├── styles/
+│   │   │   └── globals.css
+│   │   │
+│   │   ├── App.jsx
 │   │   └── main.jsx
 │   │
-│   ├── index.html
-│   └── package.json
+│   ├── .env
+│   ├── package.json
+│   └── index.html
 │
-└── README.md
+├── README.md
+└── .gitignore
 ```
 
 ---
