@@ -181,7 +181,6 @@ SMARTCAL/
 │   └── index.html
 │
 ├── README.md
-└── .gitignore
 ```
 
 ---
