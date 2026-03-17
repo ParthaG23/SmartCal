@@ -107,7 +107,7 @@ export default function Hero() {
             <motion.div {...fadeUp(0)} className="mb-6">
               <span className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-xs font-semibold text-indigo-600 dark:border-indigo-500/25 dark:bg-indigo-500/10 dark:text-indigo-400">
                 <HiSparkles className="text-xs" />
-                Free · No sign-up · Instant results
+                Smart Calculations · Instant Insights · Zero Effort
               </span>
             </motion.div>
 

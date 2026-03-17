@@ -40,7 +40,23 @@ export const loginUser = (data) =>
   API.post("/auth/login", data);
 
 /* ------------------------------------------------ */
+/* history                                          */
+/* ------------------------------------------------ */
+
+export const getMyHistory = () =>
+  API.get("/history/my-history");
+
+export const deleteHistoryItem = (id) =>
+  API.delete(`/history/${id}`);
+
+export const clearAllHistory = () =>
+  API.delete("/history/clear/all");
+
+export const saveHistory = (data) =>
+  API.post("/history", data);
+
+/* ------------------------------------------------ */
 /* default export for direct axios instance use     */
 /* ------------------------------------------------ */
 
-export default API;   // ✅ this one line fixes Profile.jsx
+export default API;

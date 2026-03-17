@@ -111,7 +111,7 @@ function Navbar() {
             </div>
             <span className="text-[15px] font-bold tracking-tight
               text-gray-900 dark:text-white/90">
-              Smart<span className="text-indigo-600 dark:text-indigo-400">Calc</span>
+             Calc<span className="text-indigo-600 dark:text-indigo-400">Vision</span>
             </span>
           </Link>
 

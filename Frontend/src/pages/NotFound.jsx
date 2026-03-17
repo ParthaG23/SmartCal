@@ -108,7 +108,7 @@ export default function NotFound() {
           className="text-sm text-gray-500 dark:text-white/40 max-w-md mx-auto mb-8"
         >
           The page you're looking for doesn't exist or was moved.
-          Let's get you back to SmartCalc so you can continue calculating.
+          Let's get you back to CalcVision so you can continue calculating.
         </motion.p>
 
         {/* Button */}

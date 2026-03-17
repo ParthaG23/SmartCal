@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaCalculator, FaGithub, FaTwitter } from "react-icons/fa";
+import { FaCalculator, FaGithub,  FaLinkedin } from "react-icons/fa";
 import { HiSparkles } from "react-icons/hi2";
 
 const LINKS = {
@@ -46,7 +46,7 @@ export default function Footer() {
                 <FaCalculator className="text-sm text-indigo-600 dark:text-indigo-400" />
               </div>
               <span className="text-[15px] font-bold tracking-tight text-gray-900 dark:text-white/90">
-                SmartCalc
+                CalcVision
               </span>
             </Link>
 
@@ -56,7 +56,7 @@ export default function Footer() {
 
             <div className="flex items-center gap-3 mt-1">
               <a
-                href="https://github.com"
+                href="https://github.com/ParthaG23"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
@@ -65,13 +65,13 @@ export default function Footer() {
                 <FaGithub className="text-sm" />
               </a>
               <a
-                href="https://twitter.com"
+                href="https://www.linkedin.com/in/partha-gayen"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Twitter"
                 className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-400 transition-all hover:border-gray-300 hover:text-gray-700 dark:border-white/8 dark:text-white/30 dark:hover:border-white/15 dark:hover:text-white/60"
               >
-                <FaTwitter className="text-sm" />
+                <FaLinkedin className="text-sm" />
               </a>
             </div>
           </div>
@@ -104,7 +104,7 @@ export default function Footer() {
       <div className="border-t border-gray-100 dark:border-white/5">
         <div className="mx-auto max-w-7xl px-6 py-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
           <p className="text-[12px] text-gray-400 dark:text-white/25">
-            © {year} SmartCalc. All rights reserved.
+            © {year} CalcVision. All rights reserved.
           </p>
           <p className="flex items-center gap-1.5 text-[12px] text-gray-400 dark:text-white/25">
             Made with <HiSparkles className="text-indigo-500 dark:text-indigo-400 text-xs" /> for smart decisions

@@ -1,6 +1,6 @@
-# SmartCalc – Full Stack Calculator Platform
+# CalcVision – Full Stack Calculator Platform
 
-SmartCalc is a modern **full-stack calculator platform** built with the **MERN stack**.
+CalcVision is a modern **full-stack calculator platform** built with the **MERN stack**.
 It provides a collection of calculators for **finance, health, math, science, and daily utilities**, all in a clean and responsive interface.
 
 The platform dynamically loads calculator definitions from the backend so new calculators can be added without modifying the frontend.
@@ -8,7 +8,7 @@ The platform dynamically loads calculator definitions from the backend so new ca
 ---
 ## 🌐 Live Demo
 
-You can try the deployed SmartCalc platform here:
+You can try the deployed CalcVision platform here:
 
 **Frontend (Vercel)**
 https://smart-cal-tan.vercel.app/

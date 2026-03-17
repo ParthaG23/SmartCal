@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { calculate, getCalculators } from "../services/api";
+import { calculate, getCalculators, saveHistory } from "../services/api"; // ✅ saveHistory added
 import { FaCalculator } from "react-icons/fa";
 import { MdOutlineCalculate } from "react-icons/md";
 import { HiArrowLeft, HiSparkles } from "react-icons/hi2";
@@ -27,9 +27,6 @@ const CAT = {
 
 /* ================================================================
    LABEL FORMATTER
-   "health_risk" → "Health Risk"
-   "bmi"         → "BMI"
-   "body_fat_est"→ "Body Fat Est"
 ================================================================ */
 function formatLabel(raw) {
   return String(raw)
@@ -40,12 +37,11 @@ function formatLabel(raw) {
 }
 
 /* ================================================================
-   RESULT NORMALISER — scalar | object | array
+   RESULT NORMALISER
 ================================================================ */
 function parseResult(raw) {
   if (raw === null || raw === undefined) return [];
 
-  // Skip known chart-data arrays (yearly_breakdown, schedule, etc.)
   const CHART_KEYS = new Set([
     "yearly_breakdown","period_breakdown","schedule","yearly_summary",
     "discount_steps","bulk_steps","slab_comparison","tip_options",
@@ -638,7 +634,7 @@ function DashCard({ title, accent, children, className = "" }) {
 }
 
 /* ================================================================
-   STAT CARD — clean label formatting, no underscores
+   STAT CARD
 ================================================================ */
 function StatCard({ label, value, accent, delay = 0 }) {
   return (
@@ -658,23 +654,17 @@ function StatCard({ label, value, accent, delay = 0 }) {
 }
 
 /* ================================================================
-   FIELD with inline UNIT SWITCHER
-   Shows pill buttons (kg / lb / oz) next to the label when
-   the field definition includes a units[] array.
+   FIELD
 ================================================================ */
 function Field({ field, value, unit, onInput, onUnit, accent }) {
   const isSelect = field.type === "select";
 
   return (
     <div className="flex flex-col gap-1.5">
-
-      {/* label row + unit pills */}
       <div className="flex items-center justify-between gap-2">
         <label className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-white/40">
           {field.label}
         </label>
-
-        {/* unit switcher pills — only when field has units[] */}
         {field.units && field.units.length > 1 && (
           <div className="flex items-center gap-1">
             {field.units.map(u => (
@@ -682,14 +672,11 @@ function Field({ field, value, unit, onInput, onUnit, accent }) {
                 key={u}
                 type="button"
                 onClick={() => onUnit(field.name, u)}
-                className={`
-                  rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wide
-                  transition-all duration-150 border
+                className={`rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wide transition-all duration-150 border
                   ${unit === u
                     ? "text-white border-transparent shadow-sm"
                     : "bg-transparent text-gray-400 border-gray-200 hover:border-gray-300 dark:text-white/35 dark:border-white/10 dark:hover:border-white/25"
-                  }
-                `}
+                  }`}
                 style={unit === u ? { background:accent, borderColor:accent } : {}}
               >
                 {u}
@@ -699,20 +686,12 @@ function Field({ field, value, unit, onInput, onUnit, accent }) {
         )}
       </div>
 
-      {/* select field */}
       {isSelect ? (
         <select
           name={field.name}
           value={value ?? field.options?.[0]?.value ?? ""}
           onChange={onInput}
-          className="
-            w-full rounded-xl border px-4 py-3 text-sm outline-none cursor-pointer
-            transition-all duration-200
-            border-gray-200 bg-gray-50 text-gray-700
-            hover:border-gray-300 focus:bg-white
-            dark:border-white/10 dark:bg-white/5 dark:text-white/80
-            dark:hover:border-white/20 dark:focus:bg-white/8
-          "
+          className="w-full rounded-xl border px-4 py-3 text-sm outline-none cursor-pointer transition-all duration-200 border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300 focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:border-white/20 dark:focus:bg-white/8"
           onFocus={e => { e.target.style.borderColor = accent; }}
           onBlur={e  => { e.target.style.borderColor = ""; }}
         >
@@ -727,14 +706,7 @@ function Field({ field, value, unit, onInput, onUnit, accent }) {
           value={value ?? ""}
           placeholder={field.placeholder ?? ""}
           onChange={onInput}
-          className="
-            w-full rounded-xl border px-4 py-3 text-sm font-mono outline-none
-            transition-all duration-200
-            border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-300
-            hover:border-gray-300 focus:bg-white focus:ring-2
-            dark:border-white/10 dark:bg-white/5 dark:text-white/90 dark:placeholder-white/20
-            dark:hover:border-white/20 dark:focus:bg-white/8
-          "
+          className="w-full rounded-xl border px-4 py-3 text-sm font-mono outline-none transition-all duration-200 border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-300 hover:border-gray-300 focus:bg-white focus:ring-2 dark:border-white/10 dark:bg-white/5 dark:text-white/90 dark:placeholder-white/20 dark:hover:border-white/20 dark:focus:bg-white/8"
           style={{ "--tw-ring-color": `${accent}30` }}
           onFocus={e => { e.target.style.borderColor = accent; }}
           onBlur={e  => { e.target.style.borderColor = ""; }}
@@ -787,7 +759,7 @@ export default function CalculatorPage() {
   const [calculator,  setCalculator]  = useState(null);
   const [loading,     setLoading]     = useState(true);
   const [inputs,      setInputs]      = useState({});
-  const [units,       setUnits]       = useState({});   // { fieldName: selectedUnit }
+  const [units,       setUnits]       = useState({});
   const [result,      setResult]      = useState(null);
   const [calculating, setCalculating] = useState(false);
   const [error,       setError]       = useState(null);
@@ -800,8 +772,6 @@ export default function CalculatorPage() {
         const res  = await getCalculators();
         const calc = res.data.data.find(c => c.slug === type || c.name?.toLowerCase().replace(/\s+/g,"") === type);
         setCalculator(calc ?? null);
-
-        // seed default units from first option of each field
         if (calc?.fields) {
           const defaults = {};
           calc.fields.forEach(f => { if (f.units?.length) defaults[f.name] = f.units[0]; });
@@ -812,23 +782,23 @@ export default function CalculatorPage() {
     })();
   }, [type]);
 
-  /* field value change */
+  /* field handlers */
   const handleInput = (e) => {
     setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }));
     setResult(null);
   };
 
-  /* unit pill change — sends  fieldName_unit  key to API */
   const handleUnit = (fieldName, unit) => {
     setUnits(prev => ({ ...prev, [fieldName]: unit }));
     setResult(null);
   };
 
-  /* submit */
+  /* ── CALCULATE + SAVE HISTORY ✅ ── */
   const handleCalculate = async () => {
-    setError(null); setCalculating(true);
+    setError(null);
+    setCalculating(true);
     try {
-      // merge unit selections as  fieldName_unit  keys
+      /* build payload with unit keys */
       const payload = { ...inputs };
       Object.entries(units).forEach(([field, unit]) => {
         payload[`${field}_unit`] = unit;
@@ -836,29 +806,56 @@ export default function CalculatorPage() {
 
       const res = await calculate(type, payload);
       setResult(res.data.result);
+
+      /* ✅ Save to history — silently, never blocks the UI */
+      try {
+        const rows      = parseResult(res.data.result);
+        const primary   = rows[0];
+        const summary   = primary
+          ? `${primary.label}: ${primary.value}`
+          : JSON.stringify(res.data.result).slice(0, 100);
+
+        await saveHistory({
+          calculatorType: type,
+          calculatorName: calculator?.name ?? type,
+          category:       (calculator?.category ?? "general").toLowerCase(),
+          inputs:         payload,
+          result:         res.data.result,
+          summary,
+        });
+      } catch {
+        /* history save failure must never affect the calculator UI */
+      }
+
     } catch (err) {
       setError(err?.response?.data?.message ?? "Calculation failed.");
-    } finally { setCalculating(false); }
+    } finally {
+      setCalculating(false);
+    }
   };
 
-  const style    = CAT[calculator?.category] ?? CAT.Default;
-  const accent   = style.ring;
-  const rows     = parseResult(result);
-  const charts   = result !== null ? getDashboardCharts(type, inputs, result, accent) : [];
+  const style     = CAT[calculator?.category] ?? CAT.Default;
+  const accent    = style.ring;
+  const rows      = parseResult(result);
+  const charts    = result !== null ? getDashboardCharts(type, inputs, result, accent) : [];
   const hasCharts = charts.length > 0;
 
   return (
     <div className="min-h-screen bg-gray-50 transition-colors duration-300 dark:bg-[#0a0a0e]">
 
       {/* dark glow */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 h-96 opacity-0 dark:opacity-100 transition-opacity duration-500"
-        style={{ background:`radial-gradient(ellipse 70% 80% at 50% -10%, ${accent}15, transparent 70%)` }} />
+      <div
+        className="pointer-events-none fixed inset-x-0 top-0 h-96 opacity-0 dark:opacity-100 transition-opacity duration-500"
+        style={{ background:`radial-gradient(ellipse 70% 80% at 50% -10%, ${accent}15, transparent 70%)` }}
+      />
 
       <div className="relative px-4 py-10 lg:px-8">
 
         {/* back */}
-        <button onClick={() => navigate(-1)}
-          className="mb-8 flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-gray-700 dark:text-white/35 dark:hover:text-white/70 transition-colors">
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-8 flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-gray-700 dark:text-white/35 dark:hover:text-white/70 transition-colors"
+        >
           <HiArrowLeft /> All Calculators
         </button>
 
@@ -921,7 +918,6 @@ export default function CalculatorPage() {
               <div className="lg:sticky lg:top-6">
                 <DashCard title={`${calculator.name} Inputs`} accent={accent}>
                   <div className="flex flex-col gap-5">
-
                     {calculator.fields.map((field, i) => (
                       <motion.div key={field.name}
                         initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }}
@@ -939,17 +935,24 @@ export default function CalculatorPage() {
 
                     <AnimatePresence>
                       {error && (
-                        <motion.p initial={{ opacity:0, height:0 }} animate={{ opacity:1, height:"auto" }}
-                          exit={{ opacity:0, height:0 }} className="text-xs text-red-500 dark:text-red-400">
+                        <motion.p
+                          initial={{ opacity:0, height:0 }}
+                          animate={{ opacity:1, height:"auto" }}
+                          exit={{ opacity:0, height:0 }}
+                          className="text-xs text-red-500 dark:text-red-400"
+                        >
                           {error}
                         </motion.p>
                       )}
                     </AnimatePresence>
 
                     <motion.button
-                      onClick={handleCalculate} disabled={calculating} whileTap={{ scale:0.97 }}
+                      onClick={handleCalculate}
+                      disabled={calculating}
+                      whileTap={{ scale:0.97 }}
                       className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold text-white shadow-md transition-all duration-200 hover:brightness-110 disabled:opacity-55 disabled:cursor-not-allowed"
-                      style={{ background:`linear-gradient(135deg, ${accent}, ${accent}bb)`, boxShadow:`0 4px 24px ${accent}35` }}>
+                      style={{ background:`linear-gradient(135deg, ${accent}, ${accent}bb)`, boxShadow:`0 4px 24px ${accent}35` }}
+                    >
                       {calculating ? (
                         <>
                           <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -995,10 +998,13 @@ export default function CalculatorPage() {
                 ) : (
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {charts.map(({ title, span, Chart }, i) => (
-                      <motion.div key={title}
+                      <motion.div
+                        key={title}
                         className={span === "full" ? "sm:col-span-2" : "col-span-1"}
-                        initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }}
-                        transition={{ delay:0.08+i*0.07, duration:0.28 }}>
+                        initial={{ opacity:0, y:16 }}
+                        animate={{ opacity:1, y:0 }}
+                        transition={{ delay:0.08+i*0.07, duration:0.28 }}
+                      >
                         <DashCard title={title} accent={accent}>
                           <Chart />
                         </DashCard>

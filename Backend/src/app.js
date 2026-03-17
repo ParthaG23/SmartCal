@@ -8,6 +8,7 @@ const morgan      = require("morgan");
 
 const calculatorRoutes = require("./routes/calculatorRoutes");
 const authRoutes       = require("./routes/authRoutes");
+const historyRoutes    = require("./routes/historyRoutes");    // ✅ ADDED
 const errorHandler     = require("./middleware/errorMiddleware");
 const requestLogger    = require("./middleware/requestLogger");
 const { getStatus }    = require("./config/db");
@@ -21,7 +22,7 @@ const isDev  = !isProd;
 ============================================================ */
 app.use(
   helmet({
-    contentSecurityPolicy:    false,
+    contentSecurityPolicy:     false,
     crossOriginEmbedderPolicy: false,
   })
 );
@@ -41,8 +42,8 @@ const corsOptions = {
         if (allowedOrigins.includes(origin)) return callback(null, true);
         callback(new Error(`CORS: origin "${origin}" not allowed`));
       },
-  methods:             ["GET", "POST", "DELETE", "OPTIONS"],
-  allowedHeaders:      ["Content-Type", "Authorization"],  // ✅ Authorization allowed
+  methods:             ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // ✅ PUT ADDED
+  allowedHeaders:      ["Content-Type", "Authorization"],
   exposedHeaders:      ["X-Request-Id"],
   credentials:         true,
   optionsSuccessStatus: 200,
@@ -112,10 +113,11 @@ app.get("/api/health", (req, res) => {
 });
 
 /* ============================================================
-   ROUTES — after all middleware        ✅
+   ROUTES — after all middleware
 ============================================================ */
-app.use("/api/auth",        authRoutes);        // ✅ mounted once
-app.use("/api/calculators", calculatorRoutes);  // ✅ mounted once
+app.use("/api/auth",        authRoutes);        // ✅
+app.use("/api/calculators", calculatorRoutes);  // ✅
+app.use("/api/history",     historyRoutes);     // ✅ ADDED
 
 /* ============================================================
    404
