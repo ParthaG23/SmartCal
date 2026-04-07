@@ -52,9 +52,10 @@ function parseResult(raw) {
   if (typeof raw === "object" && !Array.isArray(raw)) {
     return Object.entries(raw)
       .filter(([k]) => !CHART_KEYS.has(k))
+      .filter(([, v]) => typeof v !== "object" || v === null)
       .map(([label, value], i) => ({
         label: formatLabel(label),
-        value: typeof value === "object" ? JSON.stringify(value) : String(value),
+        value: String(value),
         primary: i === 0,
       }));
   }
@@ -612,8 +613,86 @@ function getDashboardCharts(slug, inputs, result, accent) {
       )},
     ];
   }
+  /* ================================================================
+     FALLBACK: GENERIC CHARTS FOR DYNAMIC/NEW CALCULATORS
+  ================================================================ */
+  const numericData = [];
+  if (typeof result === "object" && result !== null) {
+    Object.entries(result).forEach(([k, v]) => {
+      if (typeof v === "object") return; // skip arrays/nested objects
+      // Strip currency symbols, commas, units for robust numeric extraction
+      const cleaned = String(v).replace(/[₹$€£¥,\s]/g, "").replace(/^[^0-9.-]+/, "");
+      const num = parseFloat(cleaned);
+      const skipKeys = ["message", "status", "note", "tip", "type", "sign", "category", "direction", "equation", "expression", "stage", "rating"];
+      if (!isNaN(num) && isFinite(num) && typeof k === "string" && !skipKeys.some(sk => k.toLowerCase().includes(sk))) {
+        numericData.push({ name: formatLabel(k), value: num });
+      }
+    });
+  } else if (result !== null && !isNaN(parseFloat(result))) {
+    numericData.push({ name: "Result", value: parseFloat(result) });
+  }
 
-  return [];
+  if (numericData.length === 1) {
+    const val = numericData[0].value;
+    const gaugeData = [
+      { name: numericData[0].name, value: val, fill: accent },
+      { name: "Max", value: val > 0 ? val * 0.2 : 100, fill: accent + "22" } 
+    ];
+    return [
+       { title: "Magnitude Measurement", span: "full", Chart: () => (
+        <ResponsiveContainer width="100%" height={220}>
+          <RadialBarChart cx="50%" cy="50%" innerRadius="55%" outerRadius="85%" startAngle={180} endAngle={0} data={gaugeData}>
+            <PolarAngleAxis type="number" domain={[0, Math.max(val * 1.2, 10)]} tick={false} />
+            <RadialBar dataKey="value" cornerRadius={8} background={{ fill:"rgba(128,128,128,0.08)" }}>
+              <Cell fill={accent} />
+              <Cell fill="transparent" />
+            </RadialBar>
+            <text x="50%" y="45%" textAnchor="middle" dominantBaseline="middle" style={{ fontSize:32, fontWeight:700, fill:accent }}>
+              {val.toLocaleString()}
+            </text>
+            <text x="50%" y="60%" textAnchor="middle" dominantBaseline="middle" style={{ fontSize:11, fill:"#9ca3af" }}>
+              {numericData[0].name}
+            </text>
+          </RadialBarChart>
+        </ResponsiveContainer>
+      )}
+    ];
+  } else if (numericData.length > 1) {
+    const pieData = numericData.filter(d => d.value > 0);
+    return [
+       { title: "Values Extrapolated", span: "half", Chart: () => (
+         <ResponsiveContainer width="100%" height={220}>
+           <BarChart data={numericData} margin={{ top:4,right:4,left:-20,bottom:0 }}>
+             {GRID}<XAxis dataKey="name" tick={{...XTICK, fontSize: 10}} /><YAxis tick={YTICK} />
+             <Tooltip contentStyle={TT} />
+             <Bar dataKey="value" radius={[4,4,0,0]}>
+               {numericData.map((_, i) => <Cell key={i} fill={accent} opacity={Math.max(0.4, 1 - i * 0.15)} />)}
+             </Bar>
+           </BarChart>
+         </ResponsiveContainer>
+       )},
+       pieData.length > 0 ? { title: "Distribution Overview", span: "half", Chart: () => (
+         <ResponsiveContainer width="100%" height={220}>
+           <PieChart>
+             <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={82} paddingAngle={4} dataKey="value">
+               {pieData.map((_, i) => <Cell key={i} fill={i === 0 ? accent : (i === 1 ? "#6b7280" : "#a8a29e")} opacity={1 - i * 0.1} />)}
+             </Pie>
+             <Tooltip contentStyle={TT} />
+             <Legend wrapperStyle={{ fontSize: 11 }} />
+           </PieChart>
+         </ResponsiveContainer>
+       )} : null
+    ].filter(Boolean);
+  }
+
+  // Fallback if no specific numeric data found
+  return [
+    { title: "Result Processed", span: "full", Chart: () => (
+      <div className="flex h-48 items-center justify-center rounded-xl bg-gray-50/50 dark:bg-white/5 border border-dashed border-gray-200 dark:border-white/10">
+         <p className="text-sm text-gray-400 dark:text-white/40 font-medium tracking-wide">Graphical insight auto-generation pending for this output.</p>
+      </div>
+    )}
+  ];
 }
 
 /* ================================================================

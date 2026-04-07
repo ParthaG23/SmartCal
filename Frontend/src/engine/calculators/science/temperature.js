@@ -1,7 +1,7 @@
 export default {
   name: "Temperature Converter",
   slug: "temperature",
-  category: "Converters",
+  category: "Science",
   description: "Celsius, Fahrenheit, Kelvin with feels-like data and fun reference points",
 
   fields: [

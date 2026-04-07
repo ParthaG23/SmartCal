@@ -19,12 +19,18 @@ const fadeUp = (delay = 0) => ({
 const QUICK_LINKS = [
   { label: "BMI", slug: "bmi", accent: "#ec4899" },
   { label: "EMI", slug: "emi", accent: "#6366f1" },
+  { label: "SIP", slug: "sip", accent: "#6366f1" },
   { label: "GST", slug: "gst", accent: "#6366f1" },
-  { label: "Compound Interest", slug: "compoundInterest", accent: "#6366f1" },
-  { label: "Fuel Cost", slug: "fuelCost", accent: "#06b6d4" },
+  { label: "BMR", slug: "bmr", accent: "#ec4899" },
+  { label: "Quadratic", slug: "quadratic", accent: "#3b82f6" },
+  { label: "Ohm's Law", slug: "ohms-law", accent: "#a855f7" },
   { label: "Discount", slug: "discount", accent: "#f97316" },
-  { label: "Temperature", slug: "temperature", accent: "#a855f7" },
+  { label: "Fuel Cost", slug: "fuelCost", accent: "#06b6d4" },
+  { label: "Sleep Cycle", slug: "sleep-cycle", accent: "#f59e0b" },
   { label: "Age", slug: "age", accent: "#f59e0b" },
+  { label: "Electricity", slug: "electricity-cost", accent: "#f97316" },
+  { label: "Pace", slug: "pace", accent: "#06b6d4" },
+  { label: "Macros", slug: "macros", accent: "#ec4899" },
 ];
 
 function StatCard({ icon, label, value, accent }) {
@@ -167,16 +173,19 @@ export default function Hero() {
                 <Link
                   key={slug}
                   to={`/calculator/${slug}`}
-                  className="rounded-full border px-3 py-1 text-[12px] font-medium transition-all border-gray-200 bg-white text-gray-500 dark:border-white/8 dark:bg-white/3 dark:text-white/40"
+                  className="group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200 border-gray-200 bg-white text-gray-600 hover:shadow-md hover:-translate-y-0.5 dark:border-white/10 dark:bg-white/5 dark:text-white/50 dark:hover:border-white/20"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = accent;
                     e.currentTarget.style.color = accent;
+                    e.currentTarget.style.boxShadow = `0 4px 12px ${accent}25`;
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = "";
                     e.currentTarget.style.color = "";
+                    e.currentTarget.style.boxShadow = "";
                   }}
                 >
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: accent }} />
                   {label}
                 </Link>
               ))}
@@ -189,7 +198,7 @@ export default function Hero() {
               <StatCard
                 icon={<FaCalculator />}
                 label="Calculators"
-                value="13+ Tools"
+                value="70+ Tools"
                 accent="#6366f1"
               />
               <StatCard

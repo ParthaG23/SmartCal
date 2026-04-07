@@ -4,36 +4,11 @@
  * All calculation logic now runs client-side.
  */
 
-import bmi              from "./calculators/bmi.js";
-import emi              from "./calculators/emi.js";
-import age              from "./calculators/age.js";
-import average          from "./calculators/average.js";
-import compoundInterest from "./calculators/compoundInterest.js";
-import discount         from "./calculators/discount.js";
-import factorial        from "./calculators/factorial.js";
-import fuelCost         from "./calculators/fuelCost.js";
-import gst              from "./calculators/gst.js";
-import percentage       from "./calculators/percentage.js";
-import simpleInterest   from "./calculators/simpleInterest.js";
-import temperature      from "./calculators/temperature.js";
-import tip              from "./calculators/tip.js";
+/* Automatically import all calculators from category subfolders */
+const calcModules = import.meta.glob("./calculators/**/*.js", { eager: true });
 
 /* ── Calculator registry ─────────────────────────────────── */
-const CALCULATORS = [
-  bmi,
-  emi,
-  age,
-  average,
-  compoundInterest,
-  discount,
-  factorial,
-  fuelCost,
-  gst,
-  percentage,
-  simpleInterest,
-  temperature,
-  tip,
-];
+const CALCULATORS = Object.values(calcModules).map(mod => mod.default).filter(Boolean);
 
 const SLUG_MAP = Object.fromEntries(CALCULATORS.map(c => [c.slug, c]));
 
@@ -42,7 +17,7 @@ const SLUG_MAP = Object.fromEntries(CALCULATORS.map(c => [c.slug, c]));
  * Mirrors the old GET /api/calculators endpoint.
  */
 export function getAllCalculators() {
-  return CALCULATORS.map(({ run, ...meta }) => meta);
+  return CALCULATORS.map(({ run, ...meta }) => meta).sort((a,b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
 }
 
 /**

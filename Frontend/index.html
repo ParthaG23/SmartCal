@@ -5,51 +5,95 @@
   <meta charset="UTF-8" />
 
   <!-- Viewport -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <!-- Title -->
-  <title>CalcVision— Free Online Calculators</title>
+  <title>CalcVision — Free Online Calculators</title>
 
   <!-- SEO -->
-  <meta name="description" content="CalcVision is a fast and free calculator platform for finance, health, shopping and science. Calculate BMI, EMI, GST, compound interest and more instantly." />
-  <meta name="keywords" content="online calculator, EMI calculator, BMI calculator, GST calculator, compound interest calculator, finance calculator" />
+  <meta name="description" content="CalcVision is a fast and free calculator platform with 70+ tools for finance, health, math, science, shopping, personal and travel. Calculate BMI, EMI, SIP, GST and more instantly." />
+  <meta name="keywords" content="online calculator, EMI calculator, BMI calculator, GST calculator, SIP calculator, compound interest calculator, finance calculator, PWA calculator" />
   <meta name="author" content="CalcVision" />
 
-  <!-- Theme color -->
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#6366f1" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CalcVision" />
+  <link rel="apple-touch-icon" href="/icon-512.png" />
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.png" />
+  <link rel="icon" type="image/png" href="/icon-512.png" />
 
   <!-- Open Graph (social preview) -->
-  <meta property="og:title" content="CalcVision — Free Online Calculators" />
-  <meta property="og:description" content="Calculate finance, health, math and shopping values instantly with CalcVision." />
+  <meta property="og:title" content="CalcVision — 70+ Free Online Calculators" />
+  <meta property="og:description" content="Calculate finance, health, math, science and shopping values instantly with CalcVision." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://smartcalc.vercel.app" />
-  <meta property="og:image" content="/preview.png" />
+  <meta property="og:url" content="https://smart-cal-tan.vercel.app" />
+  <meta property="og:image" content="/icon-512.png" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="CalcVision — Online Calculators" />
-  <meta name="twitter:description" content="Free calculators for EMI, BMI, GST, interest and more." />
-  <meta name="twitter:image" content="/preview.png" />
+  <meta name="twitter:description" content="70+ free calculators for EMI, BMI, SIP, GST, interest and more." />
+  <meta name="twitter:image" content="/icon-512.png" />
 
   <!-- Performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Splash preloader styles (shown before React hydrates) -->
+  <style>
+    #splash-preloader {
+      position: fixed; inset: 0; z-index: 99999;
+      display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px;
+      background: #09090b;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    #splash-preloader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+    #splash-preloader .sp-ring {
+      width: 52px; height: 52px;
+      border: 3px solid rgba(99,102,241,0.15);
+      border-top-color: #6366f1;
+      border-radius: 50%;
+      animation: sp-spin 0.8s linear infinite;
+    }
+    #splash-preloader .sp-text {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 13px; font-weight: 600; letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.25);
+    }
+    @keyframes sp-spin { to { transform: rotate(360deg); } }
+  </style>
 </head>
 
 <body>
+
+  <!-- Native splash preloader (disappears when React mounts) -->
+  <div id="splash-preloader">
+    <div class="sp-ring"></div>
+    <div class="sp-text">CALCVISION</div>
+  </div>
 
   <!-- React App -->
   <div id="root"></div>
 
   <!-- Vite Entry -->
   <script type="module" src="/src/main.jsx"></script>
+
+  <!-- Register Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
 
 </body>
 </html>

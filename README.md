@@ -16,9 +16,9 @@ https://smart-cal-tan.vercel.app/
 
 ## 🚀 Features
 
-* 13+ calculator types across multiple categories
+* **70 comprehensive calculators** across 7 precise categories (10 per category)
 * All calculations run instantly in-browser (no API calls)
-* Interactive charts & visualizations (Recharts)
+* **Dynamic Auto-Graphing Engine:** Automatically generates animated charts (Recharts) for *any* customized formula output.
 * Responsive premium UI with dark / light theme
 * Framer Motion animations throughout
 * Zero backend dependencies — purely static frontend
@@ -51,18 +51,8 @@ SmartCal/
 │   │   │   ├── calculatorEngine.js    # Registry & runner
 │   │   │   └── calculators/           # Individual calculator modules
 │   │   │       ├── age.js
-│   │   │       ├── average.js
 │   │   │       ├── bmi.js
-│   │   │       ├── compoundInterest.js
-│   │   │       ├── discount.js
-│   │   │       ├── emi.js
-│   │   │       ├── factorial.js
-│   │   │       ├── fuelCost.js
-│   │   │       ├── gst.js
-│   │   │       ├── percentage.js
-│   │   │       ├── simpleInterest.js
-│   │   │       ├── temperature.js
-│   │   │       └── tip.js
+│   │   │       ├── ... (70 modular files perfectly categorized)
 │   │   │
 │   │   ├── services/
 │   │   │   └── api.js                 # Client-side API adapter
@@ -142,23 +132,19 @@ No environment variables needed — everything runs client-side.
 
 ---
 
-## 📊 Available Calculators
+## 📊 Available Categories
 
-| Calculator | Category | Description |
+CalcVision hosts a massive library of **70 calculators** natively configured across all fundamental domains:
+
+| Category | Typical Tools Include | Focus |
 |---|---|---|
-| BMI | Health | Body Mass Index with ideal weight, body fat estimate |
-| EMI | Finance | Monthly installment with amortization breakdown |
-| Compound Interest | Finance | Growth with inflation, SIP, and CAGR |
-| Simple Interest | Finance | Basic interest calculation with growth chart |
-| GST | Finance | Tax breakdown across all slabs |
-| Discount | Shopping | Savings at various discount percentages |
-| Tip | Personal | Bill split and tip comparison |
-| Fuel Cost | Travel | Trip cost with mileage & price sensitivity |
-| Age | Personal | Exact age with life milestones |
-| Average | Math | Mean, deviation, and distribution |
-| Factorial | Math | Factorial with growth visualization |
-| Percentage | Math | Percentage gauge with value chart |
-| Temperature | Science | Celsius, Fahrenheit, Kelvin conversion |
+| 💰 **Finance** | EMI, Compound Interest, SIP, GST, Mortgages, Returns | Financial projections, investments, loan scheduling. |
+| ⚕️ **Health** | BMI, BMR, TDEE, Macros, Water Intake, Target Heart Rate | Health benchmarks, calories, fitness optimization. |
+| 📐 **Math** | Averages, Factorials, LCM/GCD, Standard Deviation, Fractions | Statistical distributions, algebra, and cryptography. |
+| 🧪 **Science** | Temperature, Kinetic Energy, Density, Ohm's Law | Standard physical formulas, equations of motion. |
+| 🛍️ **Shopping**| Discounts, Unit Prices, BOGO, Electricity Costs | Retail deals, profit margins, sales tax adjusters. |
+| 📅 **Personal**| Age, Sleep Cycles, Reading Time, Habit Streaks | Lifestyle tracking, reading speeds, milestones. |
+| 🚗 **Travel**  | Fuel Costs, Time Zones, Flight Carbon, Road Trips | Logistics efficiency, gas tolls, flight emissions. |
 
 ---
 

@@ -2,8 +2,8 @@ import { motion } from "framer-motion";
 import {
   FaCalculator, FaMoneyBillWave, FaHeartbeat,
   FaSquareRootAlt, FaFlask, FaShoppingCart, FaCar,
+  FaUserClock,
 } from "react-icons/fa";
-import { MdSwapHoriz } from "react-icons/md";
 
 /* ── Category definitions ─────────────────────────────────── */
 const CATEGORIES = [
@@ -13,9 +13,8 @@ const CATEGORIES = [
   { name: "Math",       icon: <FaSquareRootAlt />,  accent: "#3b82f6" },
   { name: "Science",    icon: <FaFlask />,           accent: "#a855f7" },
   { name: "Shopping",   icon: <FaShoppingCart />,   accent: "#f97316" },
+  { name: "Personal",   icon: <FaUserClock />,      accent: "#f59e0b" },
   { name: "Travel",     icon: <FaCar />,             accent: "#06b6d4" },
-  { name: "Converters", icon: <MdSwapHoriz />,       accent: "#10b981" },
-  { name: "Personal",   icon: <FaCalculator />,      accent: "#f59e0b" },
 ];
 
 export default function CategorySection({ category, setCategory }) {

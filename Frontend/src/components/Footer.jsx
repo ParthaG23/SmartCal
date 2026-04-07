@@ -6,9 +6,12 @@ const LINKS = {
   Calculators: [
     { label: "BMI",               to: "/calculator/bmi"              },
     { label: "EMI",               to: "/calculator/emi"              },
-    { label: "Compound Interest", to: "/calculator/compoundInterest" },
+    { label: "SIP",               to: "/calculator/sip"              },
     { label: "GST",               to: "/calculator/gst"              },
+    { label: "Quadratic",         to: "/calculator/quadratic"        },
+    { label: "Ohm's Law",         to: "/calculator/ohms-law"         },
     { label: "Discount",          to: "/calculator/discount"         },
+    { label: "Sleep Cycle",       to: "/calculator/sleep-cycle"      },
     { label: "Fuel Cost",         to: "/calculator/fuelCost"         },
   ],
   Categories: [
@@ -17,6 +20,7 @@ const LINKS = {
     { label: "Math",     to: "/categories?category=Math"     },
     { label: "Science",  to: "/categories?category=Science"  },
     { label: "Shopping", to: "/categories?category=Shopping" },
+    { label: "Personal", to: "/categories?category=Personal" },
     { label: "Travel",   to: "/categories?category=Travel"   },
   ],
   Product: [
