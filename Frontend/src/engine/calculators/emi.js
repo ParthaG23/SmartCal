@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: "EMI Calculator",
   slug: "emi",
   category: "Finance",
@@ -52,12 +52,10 @@ module.exports = {
     if (tenureUnit === "years") N = N * 12;
     if (!P || !rate || !N) throw new Error("Loan amount, rate, and tenure are required");
 
-    // ── Standard EMI ──
     const emi         = P * r * Math.pow(1+r, N) / (Math.pow(1+r, N) - 1);
     const totalPayment = emi * N;
     const totalInterest = totalPayment - P;
 
-    // ── Amortisation schedule (monthly, capped at 360) ──
     let   balance = P;
     let   totalIntPaid = 0;
     const schedule = [];
@@ -90,7 +88,6 @@ module.exports = {
       if (balance <= 0) { newTenure = m; break; }
     }
 
-    // ── Yearly summary ──
     const yearlySummary = [];
     for (let y = 0; y < Math.ceil(N/12); y++) {
       const slice = schedule.slice(y*12, y*12+12);

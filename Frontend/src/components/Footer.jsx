@@ -21,7 +21,6 @@ const LINKS = {
   ],
   Product: [
     { label: "Home",    to: "/"        },
-    { label: "History", to: "/history" },
     { label: "About",   to: "/about"   },
   ],
 };

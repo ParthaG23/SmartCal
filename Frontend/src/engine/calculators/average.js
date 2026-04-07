@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: "Average Calculator",
   slug: "average",
   category: "Math",
@@ -32,37 +32,31 @@ module.exports = {
     const sum  = arr.reduce((a, b) => a + b, 0);
     const mean = sum / n;
 
-    // ── Median ──
     const sorted = [...arr].sort((a, b) => a - b);
     const mid    = Math.floor(n / 2);
     const median = n % 2 === 0 ? (sorted[mid-1] + sorted[mid]) / 2 : sorted[mid];
 
-    // ── Mode ──
     const freq  = {};
     arr.forEach(v => { freq[v] = (freq[v] || 0) + 1; });
     const maxF  = Math.max(...Object.values(freq));
     const modes = Object.keys(freq).filter(k => freq[k] === maxF).map(Number);
     const modeStr = maxF === 1 ? "No mode (all unique)" : modes.join(", ");
 
-    // ── Geometric mean (positive numbers only) ──
     const allPositive = arr.every(v => v > 0);
     const geoMean = allPositive
       ? Math.exp(arr.reduce((s, v) => s + Math.log(v), 0) / n)
       : null;
 
-    // ── Harmonic mean (positive numbers only) ──
     const harmMean = allPositive
       ? n / arr.reduce((s, v) => s + 1/v, 0)
       : null;
 
-    // ── Variance & Std Dev ──
     const variance   = arr.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / n;
     const stdDev     = Math.sqrt(variance);
     const sampleVar  = n > 1 ? arr.reduce((s, v) => s + Math.pow(v-mean,2),0)/(n-1) : 0;
     const sampleStd  = Math.sqrt(sampleVar);
     const cv         = mean !== 0 ? (stdDev / mean) * 100 : 0;
 
-    // ── Weighted mean ──
     let weightedMean = null;
     if (weights.trim()) {
       const wArr = String(weights).split(/[\s,;]+/).map(Number).filter(n=>!isNaN(n));
@@ -72,13 +66,11 @@ module.exports = {
       }
     }
 
-    // ── Range, quartiles ──
     const range  = sorted[n-1] - sorted[0];
     const q1     = sorted[Math.floor(n/4)];
     const q3     = sorted[Math.floor(3*n/4)];
     const iqr    = q3 - q1;
 
-    // ── Distribution data for chart ──
     const distribution = arr.map((v, i) => ({
       index:     i + 1,
       value:     v,

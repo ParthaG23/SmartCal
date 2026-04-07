@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { FaCalculator } from "react-icons/fa";
 import {
-  FiZap, FiShield, FiTrendingUp, FiClock,
+  FiZap, FiShield, FiTrendingUp,
   FiSmartphone, FiMoon, FiCode, FiHeart,
 } from "react-icons/fi";
 import { HiSparkles } from "react-icons/hi2";
@@ -18,20 +18,19 @@ const fadeUp = (delay = 0) => ({
 const FEATURES = [
   { icon: FiZap,         title: "Lightning Fast",     desc: "Instant calculations with real-time results. No delays, no loading." },
   { icon: FiTrendingUp,  title: "Smart Insights",     desc: "Visual charts and breakdowns that make numbers easy to understand." },
-  { icon: FiClock,       title: "Full History",        desc: "Every calculation saved automatically. Review anytime, anywhere." },
-  { icon: FiShield,      title: "Secure & Private",   desc: "Your data is yours. Encrypted, protected, never shared." },
+  { icon: FiShield,      title: "Secure & Private",   desc: "No data leaves your browser. No accounts, no tracking." },
   { icon: FiSmartphone,  title: "Works Everywhere",   desc: "Responsive on any device — desktop, tablet, or mobile." },
   { icon: FiMoon,        title: "Dark & Light Mode",  desc: "Easy on the eyes day or night with seamless theme switching." },
+  { icon: FiCode,        title: "Open Source",         desc: "Built with modern tech. Clean code, open for contribution." },
 ];
 
 /* ── Stack data ── */
 const STACK = [
   { label: "React",    color: "#61dafb" },
-  { label: "Node.js",  color: "#8cc84b" },
-  { label: "MongoDB",  color: "#47a248" },
-  { label: "Firebase", color: "#ffca28" },
+  { label: "Vite",     color: "#646cff" },
   { label: "Tailwind", color: "#38bdf8" },
   { label: "Framer",   color: "#a78bfa" },
+  { label: "Recharts", color: "#8884d8" },
 ];
 
 /* ── Stats ── */

@@ -1,23 +1,12 @@
-module.exports = {
+export default {
   name: "Factorial Calculator",
   slug: "factorial",
   category: "Math",
   description: "Exact big-integer factorial with permutations, combinations and Stirling approximation",
 
   fields: [
-    {
-      name: "n",
-      label: "Number (n)",
-      type: "number",
-      placeholder: "10",
-      hint: "Exact for n ≤ 170 · Stirling approximation above",
-    },
-    {
-      name: "r",
-      label: "r (for nPr / nCr) — optional",
-      type: "number",
-      placeholder: "3",
-    },
+    { name: "n", label: "Number (n)", type: "number", placeholder: "10", hint: "Exact for n ≤ 170 · Stirling approximation above" },
+    { name: "r", label: "r (for nPr / nCr) — optional", type: "number", placeholder: "3" },
   ],
 
   run: ({ n, r }) => {
@@ -27,7 +16,6 @@ module.exports = {
     if (isNaN(N) || N < 0) throw new Error("n must be a non-negative integer");
     if (N > 10000)          throw new Error("n too large (max 10000)");
 
-    // ── Exact factorial using BigInt ──
     const factExact = (num) => {
       if (num <= 1) return 1n;
       let f = 1n;
@@ -42,16 +30,13 @@ module.exports = {
       ? `${nFactStr.slice(0,15)}…(${digits} digits)`
       : nFactStr;
 
-    // ── Stirling approximation (for comparison) ──
     const stirling = N > 1
       ? Math.sqrt(2 * Math.PI * N) * Math.pow(N / Math.E, N)
       : 1;
 
-    // ── Trailing zeros = min(factors of 2 & 5) ──
     let zeros = 0, temp = N;
     while (temp >= 5) { temp = Math.floor(temp/5); zeros += temp; }
 
-    // ── nPr = n! / (n-r)! ──
     let nPr = null, nCr = null;
     if (R !== null && !isNaN(R) && R >= 0 && R <= N) {
       const rFact    = factExact(R);
@@ -62,13 +47,11 @@ module.exports = {
       if (nCr.length > 25)  nCr = `${nCr.slice(0,12)}…(${nCr.length} digits)`;
     }
 
-    // ── Growth series for chart (up to min(n,20)) ──
     const series = Array.from({ length: Math.min(N, 20) }, (_, i) => {
       const val = factExact(i+1);
       return { n: i+1, value: Number(val), logValue: parseFloat(Math.log10(Number(val)).toFixed(3)) };
     });
 
-    // ── Digit count series ──
     const digitSeries = Array.from({ length: Math.min(N, 50) }, (_, i) => ({
       n: i+1, digits: factExact(i+1).toString().length,
     }));

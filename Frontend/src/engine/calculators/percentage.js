@@ -1,35 +1,20 @@
-module.exports = {
+export default {
   name: "Percentage Calculator",
   slug: "percentage",
   category: "Math",
   description: "All percentage types: of a number, change, reverse, increase/decrease and ratio",
 
   fields: [
-    {
-      name: "mode",
-      label: "Calculation Type",
-      type: "select",
-      options: [
-        { value: "of",        label: "X% of Y  (e.g. 20% of 500)"      },
-        { value: "whatPct",   label: "X is what % of Y"                  },
-        { value: "change",    label: "% Change from X to Y"              },
-        { value: "increase",  label: "Increase X by Y%"                  },
-        { value: "decrease",  label: "Decrease X by Y%"                  },
-        { value: "reverse",   label: "Reverse: Y is P% of what number?"  },
-      ],
-    },
-    {
-      name: "x",
-      label: "Value X",
-      type: "number",
-      placeholder: "200",
-    },
-    {
-      name: "y",
-      label: "Value Y",
-      type: "number",
-      placeholder: "1000",
-    },
+    { name: "mode", label: "Calculation Type", type: "select", options: [
+      { value: "of",        label: "X% of Y  (e.g. 20% of 500)"      },
+      { value: "whatPct",   label: "X is what % of Y"                  },
+      { value: "change",    label: "% Change from X to Y"              },
+      { value: "increase",  label: "Increase X by Y%"                  },
+      { value: "decrease",  label: "Decrease X by Y%"                  },
+      { value: "reverse",   label: "Reverse: Y is P% of what number?"  },
+    ]},
+    { name: "x", label: "Value X", type: "number", placeholder: "200" },
+    { name: "y", label: "Value Y", type: "number", placeholder: "1000" },
   ],
 
   run: ({ mode = "of", x, y }) => {

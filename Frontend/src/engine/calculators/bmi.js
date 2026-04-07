@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: "BMI Calculator",
   slug: "bmi",
   category: "Health",
@@ -10,7 +10,7 @@ module.exports = {
       label: "Weight",
       type: "number",
       placeholder: "70",
-      units: ["kg", "lb", "oz"],      // front-end shows unit selector
+      units: ["kg", "lb", "oz"],
       defaultUnit: "kg",
     },
     {
@@ -38,9 +38,7 @@ module.exports = {
     },
   ],
 
-  // Front-end must convert to kg / cm before calling run()
   run: ({ weight, height, age, gender, weightUnit = "kg", heightUnit = "cm" }) => {
-    // ── Unit normalisation (fallback if front-end didn't convert) ──
     let w = parseFloat(weight);
     let h = parseFloat(height);
     const a = parseFloat(age) || 25;
@@ -56,7 +54,6 @@ module.exports = {
     const hm  = h / 100;
     const bmi = w / (hm * hm);
 
-    // ── Category ──
     const category =
       bmi < 16   ? "Severe Underweight" :
       bmi < 17   ? "Moderate Underweight" :
@@ -75,7 +72,6 @@ module.exports = {
       bmi < 35   ? "High" :
                    "Very High";
 
-    // ── Ideal weight (Devine formula) ──
     const heightInches = h / 2.54;
     const idealKg = gender === "female"
       ? 45.5 + 2.3 * (heightInches - 60)
@@ -83,14 +79,11 @@ module.exports = {
     const idealMin = (18.5 * hm * hm).toFixed(1);
     const idealMax = (24.9 * hm * hm).toFixed(1);
 
-    // ── Body fat estimate (Deurenberg formula) ──
     const g   = gender === "female" ? 0 : 1;
     const bfp = (1.20 * bmi) + (0.23 * a) - (10.8 * g) - 5.4;
 
-    // ── Ponderal index ──
     const ponderal = (w / Math.pow(hm, 3)).toFixed(2);
 
-    // ── BMR (Mifflin-St Jeor) ──
     const bmr = gender === "female"
       ? 10 * w + 6.25 * h - 5 * a - 161
       : 10 * w + 6.25 * h - 5 * a + 5;

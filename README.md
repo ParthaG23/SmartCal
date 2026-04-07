@@ -1,186 +1,104 @@
-# CalcVision – Full Stack Calculator Platform
+# CalcVision – Frontend Calculator Platform
 
-CalcVision is a modern **full-stack calculator platform** built with the **MERN stack**.
+CalcVision is a modern **frontend-only calculator platform** built with **React + Vite**.
 It provides a collection of calculators for **finance, health, math, science, and daily utilities**, all in a clean and responsive interface.
 
-The platform dynamically loads calculator definitions from the backend so new calculators can be added without modifying the frontend.
+All calculation logic runs **client-side** — no backend server, no database, no accounts required.
 
 ---
-## 🌐 Live Demo
 
-You can try the deployed CalcVision platform here:
+## 🌐 Live Demo
 
 **Frontend (Vercel)**
 https://smart-cal-tan.vercel.app/
-
-**Backend API (Render)**
-https://smartcal-rusc.onrender.com
-
-Example API endpoint:
-
-```
-https://smartcal-rusc.onrender.com/api/calculators
-```
-
-⚠️ Note: The backend runs on Render's free tier, so the first request may take **30–50 seconds** if the server was inactive.
 
 ---
 
 ## 🚀 Features
 
-* Multiple calculator categories
-* Dynamic calculator configuration from API
-* Responsive premium UI
-* Dark / Light theme support
-* Calculator history
-* Unit conversion support
-* Backend API for calculations
-* MongoDB database for calculator metadata
-* Secure API with Helmet, CORS, and rate limiting
-* Production deployment ready
+* 13+ calculator types across multiple categories
+* All calculations run instantly in-browser (no API calls)
+* Interactive charts & visualizations (Recharts)
+* Responsive premium UI with dark / light theme
+* Framer Motion animations throughout
+* Zero backend dependencies — purely static frontend
+* No accounts, no tracking, no data collection
 
 ---
 
-
 ## 🧱 Tech Stack
 
-### Frontend
-
-* React
-* Vite
-* Tailwind CSS
-* Framer Motion
-* Axios
-* React Router
-
-### Backend
-
-* Node.js
-* Express.js
-* MongoDB Atlas
-* Mongoose
-* Helmet
-* CORS
-* Compression
-* Morgan logging
+* **React 19** — UI framework
+* **Vite** — Build tool & dev server
+* **Tailwind CSS** — Utility-first styling
+* **Framer Motion** — Animations
+* **Recharts** — Charts & data visualizations
+* **React Router** — Client-side routing
 
 ### Deployment
 
-* **Frontend:** Vercel
-* **Backend:** Render
-* **Database:** MongoDB Atlas
+* **Hosting:** Vercel (or any static host)
 
 ---
 
 ## 📂 Project Structure
 
 ```
-SMARTCAL/
-│
-├── backend/
+SmartCal/
+├── Frontend/
 │   ├── src/
-│   │   ├── config/              # Config files
-│   │   │   ├── db.js
-│   │   │   ├── firebaseAdmin.js
-│   │   │   └── cors.js
+│   │   ├── engine/                # Calculator logic (fully client-side)
+│   │   │   ├── calculatorEngine.js    # Registry & runner
+│   │   │   └── calculators/           # Individual calculator modules
+│   │   │       ├── age.js
+│   │   │       ├── average.js
+│   │   │       ├── bmi.js
+│   │   │       ├── compoundInterest.js
+│   │   │       ├── discount.js
+│   │   │       ├── emi.js
+│   │   │       ├── factorial.js
+│   │   │       ├── fuelCost.js
+│   │   │       ├── gst.js
+│   │   │       ├── percentage.js
+│   │   │       ├── simpleInterest.js
+│   │   │       ├── temperature.js
+│   │   │       └── tip.js
 │   │   │
-│   │   ├── controllers/         # Route logic
-│   │   │   ├── authController.js
-│   │   │   ├── calculatorController.js
-│   │   │   └── historyController.js
+│   │   ├── services/
+│   │   │   └── api.js                 # Client-side API adapter
 │   │   │
-│   │   ├── routes/              # API routes
-│   │   │   ├── authRoutes.js
-│   │   │   ├── calculatorRoutes.js
-│   │   │   └── historyRoutes.js
+│   │   ├── context/
+│   │   │   └── ThemeContext.jsx       # Dark/light theme state
 │   │   │
-│   │   ├── middlewares/         # Middleware
-│   │   │   ├── authMiddleware.js
-│   │   │   ├── firebaseAuth.js
-│   │   │   └── errorHandler.js
+│   │   ├── components/            # Reusable UI components
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── Hero.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── CalculatorCard.jsx
+│   │   │   └── CategorySection.jsx
 │   │   │
-│   │   ├── models/              # MongoDB models
-│   │   │   ├── userModel.js
-│   │   │   └── historyModel.js
-│   │   │
-│   │   ├── services/            # Business logic
-│   │   │   ├── calculator/
-│   │   │   │   ├── emi.js
-│   │   │   │   ├── factorial.js
-│   │   │   │   ├── fuelCost.js
-│   │   │   │   ├── gst.js
-│   │   │   │   ├── percentage.js
-│   │   │   │   ├── simpleInterest.js
-│   │   │   │   ├── temperature.js
-│   │   │   │   ├── tip.js
-│   │   │   │   └── index.js      # export all calculators
-│   │   │   │
-│   │   │   └── calculatorEngine.js
-│   │   │
-│   │   ├── utils/               # Helpers
-│   │   │   ├── logger.js
-│   │   │   ├── response.js
-│   │   │   └── validators.js
-│   │   │
-│   │   ├── constants/           # Static configs
-│   │   │   └── calculatorTypes.js
-│   │   │
-│   │   ├── app.js               # Express app
-│   │   └── server.js            # Server start
-│   │
-│   ├── .env
-│   ├── package.json
-│   └── .gitignore
-│
-├── frontend/
-│   ├── src/
-│   │   ├── assets/
-│   │   │
-│   │   ├── components/          # Reusable UI
-│   │   │   ├── ui/
-│   │   │   ├── layout/
-│   │   │   └── common/
-│   │   │
-│   │   ├── pages/               # Pages
+│   │   ├── pages/                 # Route pages
 │   │   │   ├── Home.jsx
-│   │   │   ├── Calculator.jsx
-│   │   │   ├── History.jsx
-│   │   │   ├── Login.jsx
-│   │   │   └── Dashboard.jsx
+│   │   │   ├── CalculatorPage.jsx
+│   │   │   ├── Categories.jsx
+│   │   │   ├── About.jsx
+│   │   │   └── NotFound.jsx
 │   │   │
-│   │   ├── features/            # Feature-based logic
-│   │   │   ├── calculator/
-│   │   │   ├── auth/
-│   │   │   └── history/
-│   │   │
-│   │   ├── context/             # React Context
-│   │   │   └── AuthContext.jsx
-│   │   │
-│   │   ├── hooks/
-│   │   │   └── useAuth.js
-│   │   │
-│   │   ├── services/            # API calls
-│   │   │   ├── api.js
-│   │   │   ├── authService.js
-│   │   │   └── calculatorService.js
-│   │   │
-│   │   ├── config/
-│   │   │   └── firebase.js
-│   │   │
-│   │   ├── utils/
-│   │   │   └── helpers.js
-│   │   │
-│   │   ├── styles/
-│   │   │   └── globals.css
+│   │   ├── routes/
+│   │   │   └── AppRoutes.jsx
 │   │   │
 │   │   ├── App.jsx
-│   │   └── main.jsx
+│   │   ├── App.css
+│   │   ├── main.jsx
+│   │   └── index.css
 │   │
-│   ├── .env
 │   ├── package.json
-│   └── index.html
+│   ├── index.html
+│   ├── vite.config.js
+│   ├── tailwind.config.js
+│   └── postcss.config.js
 │
-├── README.md
+└── README.md
 ```
 
 ---
@@ -190,68 +108,23 @@ SMARTCAL/
 ### 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/SmartCal.git
-cd SmartCal
+git clone https://github.com/ParthaG23/SmartCal.git
+cd SmartCal/Frontend
 ```
 
----
-
-## Backend Setup
+### 2️⃣ Install Dependencies
 
 ```bash
-cd backend
 npm install
 ```
 
-Create `.env`
-
-```
-PORT=5000
-NODE_ENV=development
-MONGO_URI=your_mongodb_connection
-ALLOWED_ORIGINS=http://localhost:5173
-```
-
-Run server
+### 3️⃣ Run Dev Server
 
 ```bash
 npm run dev
 ```
 
-Server runs at
-
-```
-http://localhost:5000
-```
-
-Health check
-
-```
-http://localhost:5000/api/health
-```
-
----
-
-## Frontend Setup
-
-```bash
-cd frontend
-npm install
-```
-
-Create `.env`
-
-```
-VITE_API_URL=http://localhost:5000/api
-```
-
-Run frontend
-
-```bash
-npm run dev
-```
-
-Frontend runs at
+App runs at:
 
 ```
 http://localhost:5173
@@ -259,100 +132,42 @@ http://localhost:5173
 
 ---
 
-## 🌐 Deployment
+## 🌐 Deployment (Vercel)
 
-### Frontend (Vercel)
-
-Add environment variable:
-
-```
-VITE_API_URL=https://smartcal-rusc.onrender.com
-
-Deploy with:
-
-```
+```bash
 vercel
 ```
 
----
-
-### Backend (Render)
-
-Environment variables:
-
-```
-PORT=5000
-NODE_ENV=production
-MONGO_URI=your_mongodb_connection
-ALLOWED_ORIGINS=https://your-vercel-domain.vercel.app
-```
+No environment variables needed — everything runs client-side.
 
 ---
 
-## 🔌 API Endpoints
+## 📊 Available Calculators
 
-### Health Check
-
-```
-GET /api/health
-```
-
----
-
-### Get Calculators
-
-```
-GET /api/calculators
-```
-
-Returns all calculator definitions.
-
----
-
-### Run Calculator
-
-```
-POST /api/calculators/:type
-```
-
-Example:
-
-```
-POST /api/calculators/bmi
-```
-
-Body:
-
-```json
-{
-  "weight": 70,
-  "height": 175
-}
-```
+| Calculator | Category | Description |
+|---|---|---|
+| BMI | Health | Body Mass Index with ideal weight, body fat estimate |
+| EMI | Finance | Monthly installment with amortization breakdown |
+| Compound Interest | Finance | Growth with inflation, SIP, and CAGR |
+| Simple Interest | Finance | Basic interest calculation with growth chart |
+| GST | Finance | Tax breakdown across all slabs |
+| Discount | Shopping | Savings at various discount percentages |
+| Tip | Personal | Bill split and tip comparison |
+| Fuel Cost | Travel | Trip cost with mileage & price sensitivity |
+| Age | Personal | Exact age with life milestones |
+| Average | Math | Mean, deviation, and distribution |
+| Factorial | Math | Factorial with growth visualization |
+| Percentage | Math | Percentage gauge with value chart |
+| Temperature | Science | Celsius, Fahrenheit, Kelvin conversion |
 
 ---
 
-## 📊 Example Calculators
+## 🔒 Privacy
 
-* BMI Calculator
-* EMI Calculator
-* Compound Interest
-* Discount Calculator
-* Fuel Cost Calculator
-* Age Calculator
-* Average Calculator
-* Factorial Calculator
-
----
-
-## 🔒 Security
-
-The backend uses:
-
-* Helmet security headers
-* Rate limiting
-* CORS origin control
-* JSON body size limits
+* No accounts or login required
+* No data leaves your browser
+* No tracking, no cookies, no analytics
+* Purely static — can run offline once loaded
 
 ---
 
@@ -360,8 +175,7 @@ The backend uses:
 
 Partha Gayen
 
-GitHub
-https://github.com/ParthaG23
+GitHub: https://github.com/ParthaG23
 
 ---
 

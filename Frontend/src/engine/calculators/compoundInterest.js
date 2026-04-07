@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: "Compound Interest",
   slug: "compoundInterest",
   category: "Finance",
@@ -68,11 +68,9 @@ module.exports = {
     if (timeUnit === "months") t = t / 12;
     if (!p || !r || !t) throw new Error("Principal, rate and time are required");
 
-    // ── Core compound interest ──
     const A         = p * Math.pow(1 + r / 100 / freq, freq * t);
     const interest  = A - p;
 
-    // ── With monthly SIP deposits ──
     let sipFinal = A;
     if (md > 0) {
       const monthlyRate = r / 100 / 12;
@@ -80,20 +78,15 @@ module.exports = {
       sipFinal = A + md * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
     }
 
-    // ── Real return (inflation-adjusted) ──
     const realRate  = ((1 + r/100) / (1 + inf/100) - 1) * 100;
     const realFinal = p * Math.pow(1 + realRate/100, t);
 
-    // ── CAGR ──
     const cagr = (Math.pow(A / p, 1 / t) - 1) * 100;
 
-    // ── Doubling time (Rule of 72) ──
     const doublingYears = (72 / r).toFixed(1);
 
-    // ── Effective annual rate ──
     const ear = (Math.pow(1 + r/100/freq, freq) - 1) * 100;
 
-    // ── Year-by-year breakdown (for charts) ──
     const yearlyBreakdown = Array.from({ length: Math.min(Math.ceil(t), 30) }, (_, i) => {
       const yr  = i + 1;
       const amt = p * Math.pow(1 + r/100/freq, freq*yr) + (md > 0

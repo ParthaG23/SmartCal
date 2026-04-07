@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: "Age Calculator",
   slug: "age",
   category: "Personal",
@@ -20,7 +20,6 @@ module.exports = {
 
     if (birth > now) throw new Error("Date of birth cannot be in the future");
 
-    // ── exact years / months / days ──
     let years  = now.getFullYear() - birth.getFullYear();
     let months = now.getMonth()    - birth.getMonth();
     let days   = now.getDate()     - birth.getDate();
@@ -32,23 +31,19 @@ module.exports = {
     }
     if (months < 0) { years--; months += 12; }
 
-    // ── totals ──
     const totalDays    = Math.floor((now - birth) / 86400000);
     const totalWeeks   = Math.floor(totalDays / 7);
     const totalMonths  = years * 12 + months;
     const totalHours   = totalDays * 24;
     const totalMinutes = totalHours * 60;
 
-    // ── next birthday ──
     const nextBirthday = new Date(now.getFullYear(), birth.getMonth(), birth.getDate());
     if (nextBirthday <= now) nextBirthday.setFullYear(now.getFullYear() + 1);
     const daysToNext = Math.ceil((nextBirthday - now) / 86400000);
 
-    // ── day of week born ──
     const weekDays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
     const bornOn   = weekDays[birth.getDay()];
 
-    // ── zodiac ──
     const m = birth.getMonth() + 1;
     const d = birth.getDate();
     const zodiac =

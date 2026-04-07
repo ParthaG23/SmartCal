@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { calculate, getCalculators, saveHistory } from "../services/api"; // ✅ saveHistory added
+import { calculate, getCalculators } from "../services/api";
 import { FaCalculator } from "react-icons/fa";
 import { MdOutlineCalculate } from "react-icons/md";
 import { HiArrowLeft, HiSparkles } from "react-icons/hi2";
@@ -807,25 +807,7 @@ export default function CalculatorPage() {
       const res = await calculate(type, payload);
       setResult(res.data.result);
 
-      /* ✅ Save to history — silently, never blocks the UI */
-      try {
-        const rows      = parseResult(res.data.result);
-        const primary   = rows[0];
-        const summary   = primary
-          ? `${primary.label}: ${primary.value}`
-          : JSON.stringify(res.data.result).slice(0, 100);
 
-        await saveHistory({
-          calculatorType: type,
-          calculatorName: calculator?.name ?? type,
-          category:       (calculator?.category ?? "general").toLowerCase(),
-          inputs:         payload,
-          result:         res.data.result,
-          summary,
-        });
-      } catch {
-        /* history save failure must never affect the calculator UI */
-      }
 
     } catch (err) {
       setError(err?.response?.data?.message ?? "Calculation failed.");

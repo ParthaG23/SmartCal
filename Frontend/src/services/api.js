@@ -1,62 +1,25 @@
-import axios from "axios";
+/**
+ * API Service — Fully client-side (no backend required)
+ *
+ * All calculator logic runs locally via the engine.
+ */
 
-const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL
-});
-
-/* ------------------------------------------------ */
-/* attach token automatically                       */
-/* ------------------------------------------------ */
-
-API.interceptors.request.use((config) => {
-
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  if (user?.token) {
-    config.headers.Authorization = `Bearer ${user.token}`;
-  }
-
-  return config;
-});
+import { getAllCalculators, runCalculation } from "../engine/calculatorEngine";
 
 /* ------------------------------------------------ */
 /* calculators                                      */
 /* ------------------------------------------------ */
 
 export const getCalculators = () =>
-  API.get("/calculators");
+  Promise.resolve({ data: { data: getAllCalculators() } });
 
-export const calculate = (type, data) =>
-  API.post(`/calculators/${type}`, data);
-
-/* ------------------------------------------------ */
-/* authentication                                   */
-/* ------------------------------------------------ */
-
-export const registerUser = (data) =>
-  API.post("/auth/signup", data);
-
-export const loginUser = (data) =>
-  API.post("/auth/login", data);
-
-/* ------------------------------------------------ */
-/* history                                          */
-/* ------------------------------------------------ */
-
-export const getMyHistory = () =>
-  API.get("/history/my-history");
-
-export const deleteHistoryItem = (id) =>
-  API.delete(`/history/${id}`);
-
-export const clearAllHistory = () =>
-  API.delete("/history/clear/all");
-
-export const saveHistory = (data) =>
-  API.post("/history", data);
-
-/* ------------------------------------------------ */
-/* default export for direct axios instance use     */
-/* ------------------------------------------------ */
-
-export default API;
+export const calculate = (type, data) => {
+  try {
+    const { result } = runCalculation(type, data);
+    return Promise.resolve({ data: { result } });
+  } catch (err) {
+    return Promise.reject({
+      response: { data: { message: err.message } },
+    });
+  }
+};

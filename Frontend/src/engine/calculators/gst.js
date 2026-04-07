@@ -1,45 +1,14 @@
-module.exports = {
+export default {
   name: "GST Calculator",
   slug: "gst",
   category: "Finance",
   description: "GST add / remove with CGST, SGST, IGST split and all slab comparisons",
 
   fields: [
-    {
-      name: "amount",
-      label: "Amount",
-      type: "number",
-      placeholder: "1000",
-      units: ["₹", "$", "€"],
-      defaultUnit: "₹",
-    },
-    {
-      name: "gstRate",
-      label: "GST Rate (%)",
-      type: "number",
-      placeholder: "18",
-      units: ["5%", "12%", "18%", "28%", "custom"],
-      defaultUnit: "custom",
-      hint: "Standard slabs: 5, 12, 18, 28",
-    },
-    {
-      name: "mode",
-      label: "Calculation Mode",
-      type: "select",
-      options: [
-        { value: "add",    label: "Add GST to amount (exclusive)" },
-        { value: "remove", label: "Remove GST from amount (inclusive)" },
-      ],
-    },
-    {
-      name: "transactionType",
-      label: "Transaction Type",
-      type: "select",
-      options: [
-        { value: "intrastate", label: "Intrastate (CGST + SGST)" },
-        { value: "interstate", label: "Interstate (IGST only)"   },
-      ],
-    },
+    { name: "amount", label: "Amount", type: "number", placeholder: "1000", units: ["₹", "$", "€"], defaultUnit: "₹" },
+    { name: "gstRate", label: "GST Rate (%)", type: "number", placeholder: "18", units: ["5%", "12%", "18%", "28%", "custom"], defaultUnit: "custom", hint: "Standard slabs: 5, 12, 18, 28" },
+    { name: "mode", label: "Calculation Mode", type: "select", options: [{ value: "add", label: "Add GST to amount (exclusive)" }, { value: "remove", label: "Remove GST from amount (inclusive)" }] },
+    { name: "transactionType", label: "Transaction Type", type: "select", options: [{ value: "intrastate", label: "Intrastate (CGST + SGST)" }, { value: "interstate", label: "Interstate (IGST only)" }] },
   ],
 
   run: ({ amount, gstRate, mode = "add", transactionType = "intrastate" }) => {
@@ -56,7 +25,6 @@ module.exports = {
       gstAmount  = (amt * rate) / 100;
       total      = amt + gstAmount;
     } else {
-      // Remove: base = amount / (1 + rate/100)
       base       = amt / (1 + rate / 100);
       gstAmount  = amt - base;
       total      = amt;
@@ -64,7 +32,6 @@ module.exports = {
 
     const half = gstAmount / 2;
 
-    // ── Slab comparison ──
     const slabs = [0, 5, 12, 18, 28].map(r => ({
       slab:  `${r}%`,
       base:  Math.round(base),
@@ -72,7 +39,6 @@ module.exports = {
       total: Math.round(base + (base * r) / 100),
     }));
 
-    // ── HSN hint (most common categories) ──
     const categoryHints =
       rate === 5  ? "Household necessities, some services"  :
       rate === 12 ? "Processed foods, computers, business services" :
