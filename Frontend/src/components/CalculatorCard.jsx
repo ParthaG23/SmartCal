@@ -34,10 +34,9 @@ export default function CalculatorCard({ calculator }) {
         transition={{ type: "spring", stiffness: 340, damping: 26 }}
         className="
           relative h-full overflow-hidden rounded-2xl
-          border border-gray-200/80 bg-white
-          shadow-sm hover:shadow-lg
-          transition-shadow duration-300
-          dark:border-white/8 dark:bg-[#111116]
+          bg-white dark:bg-white/5
+          shadow-sm hover:shadow-md
+          transition-all duration-300
         "
       >
         {/* Subtle top accent line */}

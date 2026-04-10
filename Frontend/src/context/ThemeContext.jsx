@@ -4,26 +4,14 @@ export const ThemeContext = createContext();
 
 export default function ThemeProvider({ children }) {
 
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "light";
-  });
+  const theme = "dark";
 
   useEffect(() => {
     const root = window.document.documentElement;
+    root.classList.add("dark");
+  }, []);
 
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-
-    localStorage.setItem("theme", theme);
-
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
+  const toggleTheme = () => {}; // No-op since we are always in dark mode
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

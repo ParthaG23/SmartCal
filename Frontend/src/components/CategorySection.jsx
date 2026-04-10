@@ -38,10 +38,10 @@ export default function CategorySection({ category, setCategory }) {
               ${active
                 ? "text-white border-transparent shadow-md"
                 : `
-                  bg-white dark:bg-[#111116]
-                  border-gray-200 dark:border-white/8
+                  bg-white dark:bg-white/5
+                  border-transparent
                   text-gray-500 dark:text-white/45
-                  hover:border-gray-300 dark:hover:border-white/15
+                  hover:shadow-sm hover:bg-gray-50 dark:hover:bg-white/10
                   hover:text-gray-700 dark:hover:text-white/70
                 `
               }

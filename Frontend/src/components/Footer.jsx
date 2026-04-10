@@ -34,9 +34,10 @@ export default function Footer() {
 
   return (
     <footer className="
-      mt-20 border-t
-      border-gray-200/80 dark:border-white/6
+      mt-20
       bg-white dark:bg-[#09090b]
+      shadow-[0_-4px_24px_rgba(0,0,0,0.02)]
+      dark:shadow-[0_-4px_24px_rgba(0,0,0,0.2)]
     ">
       {/* Main grid */}
       <div className="mx-auto max-w-7xl px-6 pt-12 pb-8">
@@ -45,8 +46,12 @@ export default function Footer() {
           {/* Brand column */}
           <div className="col-span-2 sm:col-span-1 flex flex-col gap-4">
             <Link to="/" className="flex items-center gap-2.5 w-fit group">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-500/15 transition-transform duration-200 group-hover:scale-105">
-                <FaCalculator className="text-sm text-indigo-600 dark:text-indigo-400" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl overflow-hidden shadow-lg shadow-indigo-500/10">
+                <img 
+                  src="/logo.png" 
+                  alt="CalcVision Logo" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <span className="text-[15px] font-bold tracking-tight text-gray-900 dark:text-white/90">
                 CalcVision
@@ -63,7 +68,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-400 transition-all hover:border-gray-300 hover:text-gray-700 dark:border-white/8 dark:text-white/30 dark:hover:border-white/15 dark:hover:text-white/60"
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-400 transition-all hover:bg-gray-200 hover:text-gray-700 dark:bg-white/5 dark:text-white/40 dark:hover:bg-white/10 dark:hover:text-white/70"
               >
                 <FaGithub className="text-sm" />
               </a>
@@ -72,7 +77,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Twitter"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-400 transition-all hover:border-gray-300 hover:text-gray-700 dark:border-white/8 dark:text-white/30 dark:hover:border-white/15 dark:hover:text-white/60"
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-400 transition-all hover:bg-gray-200 hover:text-gray-700 dark:bg-white/5 dark:text-white/40 dark:hover:bg-white/10 dark:hover:text-white/70"
               >
                 <FaLinkedin className="text-sm" />
               </a>
@@ -104,7 +109,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-gray-100 dark:border-white/5">
+      <div className="bg-gray-50 dark:bg-white/[0.02]">
         <div className="mx-auto max-w-7xl px-6 py-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
           <p className="text-[12px] text-gray-400 dark:text-white/25">
             © {year} CalcVision. All rights reserved.

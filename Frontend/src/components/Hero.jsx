@@ -35,7 +35,7 @@ const QUICK_LINKS = [
 
 function StatCard({ icon, label, value, accent }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border bg-white/80 dark:bg-[#111116]/80 border-gray-200/80 dark:border-white/8 px-4 py-3.5 backdrop-blur-sm shadow-sm">
+    <div className="flex items-center gap-3 rounded-2xl bg-white dark:bg-white/5 px-4 py-3.5 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
       <div
         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-base"
         style={{ background: `${accent}18`, color: accent }}
@@ -60,7 +60,7 @@ function PreviewCard({ icon, name, category, accent, delay }) {
   return (
     <motion.div
       {...fadeUp(delay)}
-      className="flex items-center gap-3 rounded-2xl border bg-white dark:bg-[#111116] border-gray-200/80 dark:border-white/8 px-4 py-3 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+      className="flex items-center gap-3 rounded-2xl bg-white dark:bg-white/5 px-4 py-3 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
     >
       <div
         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm"
@@ -149,7 +149,7 @@ export default function Hero() {
               className="flex flex-wrap gap-3 mb-10"
             >
               <Link
-                to="/"
+                to="/categories"
                 className="group inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:brightness-110 hover:shadow-xl"
                 style={{
                   background: "linear-gradient(135deg,#6366f1,#6366f1bb)",
@@ -159,13 +159,6 @@ export default function Hero() {
                 Explore Calculators
                 <HiArrowRight className="transition-transform group-hover:translate-x-0.5" />
               </Link>
-
-              <Link
-                to="/categories"
-                className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-white/70"
-              >
-                Browse Categories
-              </Link>
             </motion.div>
 
             <motion.div {...fadeUp(0.32)} className="flex flex-wrap gap-2">
@@ -173,7 +166,7 @@ export default function Hero() {
                 <Link
                   key={slug}
                   to={`/calculator/${slug}`}
-                  className="group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200 border-gray-200 bg-white text-gray-600 hover:shadow-md hover:-translate-y-0.5 dark:border-white/10 dark:bg-white/5 dark:text-white/50 dark:hover:border-white/20"
+                  className="group inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all duration-200 bg-white shadow-sm text-gray-600 hover:shadow-md hover:-translate-y-0.5 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = accent;
                     e.currentTarget.style.color = accent;
@@ -196,7 +189,7 @@ export default function Hero() {
           <div className="hidden lg:flex flex-col gap-5">
             <motion.div {...fadeUp(0.2)} className="grid grid-cols-3 gap-3">
               <StatCard
-                icon={<FaCalculator />}
+                icon={<img src="/logo.png" className="w-5 h-5 object-cover rounded" />}
                 label="Calculators"
                 value="70+ Tools"
                 accent="#6366f1"
@@ -252,7 +245,7 @@ export default function Hero() {
                 delay={0.52}
               />
               <PreviewCard
-                icon={<FaCalculator />}
+                icon={<img src="/logo.png" className="w-5 h-5 object-cover rounded-sm" />}
                 name="Discount"
                 category="Shopping"
                 accent="#f97316"

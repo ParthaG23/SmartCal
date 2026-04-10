@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { RiCalculatorLine, RiSparkling2Line, RiSafeLine, RiCompassLine, RiShieldFlashLine } from "react-icons/ri";
 
 /* ── Floating particle config ───────────────────────── */
 const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
@@ -11,8 +12,9 @@ const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
   delay: Math.random() * 2,
 }));
 
-/* ── Math symbols for floating animation ─────────────── */
-const SYMBOLS = ["∑", "π", "∫", "÷", "×", "√", "%", "±", "∞", "Δ", "λ", "Ω"];
+/* ── Math & Tech symbols for floating animation ────────── */
+const SYMBOLS = ["∑", "π", "∫", "÷", "×", "√", "%", "±", "∞", "Δ", "λ", "Ω", "θ", "φ", "δ", "μ", "σ", "β"];
+const ICONS = [RiCalculatorLine, RiSparkling2Line, RiSafeLine, RiCompassLine, RiShieldFlashLine];
 
 export default function SplashScreen({ onFinish }) {
   const [phase, setPhase] = useState(0); // 0=ring, 1=logo, 2=text, 3=exit
@@ -84,15 +86,15 @@ export default function SplashScreen({ onFinish }) {
             />
           ))}
 
-          {/* Floating math symbols */}
-          {SYMBOLS.map((sym, i) => (
+          {/* Floating symbols & icons */}
+          {SYMBOLS.concat(ICONS).map((Item, i) => (
             <motion.span
-              key={sym}
+              key={i}
               className="absolute text-white/[0.04] font-bold select-none pointer-events-none"
               style={{
                 left: `${8 + (i * 7.5) % 85}%`,
                 top: `${10 + (i * 13) % 75}%`,
-                fontSize: `${18 + i * 2}px`,
+                fontSize: typeof Item === "string" ? `${18 + i * 2}px` : "24px",
               }}
               animate={{
                 y: [0, -20, 0],
@@ -105,7 +107,7 @@ export default function SplashScreen({ onFinish }) {
                 ease: "easeInOut",
               }}
             >
-              {sym}
+              {typeof Item === "string" ? Item : <Item />}
             </motion.span>
           ))}
 
@@ -145,29 +147,20 @@ export default function SplashScreen({ onFinish }) {
 
               {/* Icon container */}
               <motion.div
-                className="flex items-center justify-center rounded-2xl"
+                className="flex items-center justify-center rounded-2xl overflow-hidden"
                 style={{
                   width: 72,
                   height: 72,
-                  background: "linear-gradient(135deg, #6366f1 0%, #ec4899 100%)",
-                  boxShadow: "0 0 40px rgba(99,102,241,0.3), 0 0 80px rgba(236,72,153,0.15)",
+                  boxShadow: "0 0 40px rgba(99,102,241,0.2), 0 0 80px rgba(236,72,153,0.1)",
                 }}
                 animate={phase >= 1 ? { scale: [1, 1.05, 1] } : {}}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
-                {/* Calculator icon SVG */}
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="4" y="2" width="16" height="20" rx="2" />
-                  <line x1="8" y1="6" x2="16" y2="6" />
-                  <line x1="8" y1="10" x2="8" y2="10.01" />
-                  <line x1="12" y1="10" x2="12" y2="10.01" />
-                  <line x1="16" y1="10" x2="16" y2="10.01" />
-                  <line x1="8" y1="14" x2="8" y2="14.01" />
-                  <line x1="12" y1="14" x2="12" y2="14.01" />
-                  <line x1="16" y1="14" x2="16" y2="14.01" />
-                  <line x1="8" y1="18" x2="8" y2="18.01" />
-                  <line x1="12" y1="18" x2="16" y2="18" />
-                </svg>
+                <img 
+                  src="/logo.png" 
+                  alt="CalcVision Logo" 
+                  className="w-full h-full object-cover"
+                />
               </motion.div>
             </motion.div>
 

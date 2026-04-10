@@ -65,8 +65,11 @@
     }
     #splash-preloader .sp-text {
       font-family: 'Inter', system-ui, sans-serif;
-      font-size: 13px; font-weight: 600; letter-spacing: 0.08em;
-      color: rgba(255,255,255,0.25);
+      font-size: 11px; font-weight: 800; letter-spacing: 0.2em;
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-top: 10px;
     }
     @keyframes sp-spin { to { transform: rotate(360deg); } }
   </style>
@@ -76,7 +79,12 @@
 
   <!-- Native splash preloader (disappears when React mounts) -->
   <div id="splash-preloader">
-    <div class="sp-ring"></div>
+    <div style="position: relative;">
+      <div class="sp-ring"></div>
+      <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #6366f1, #ec4899); border-radius: 6px; box-shadow: 0 0 15px rgba(99,102,241,0.5);"></div>
+      </div>
+    </div>
     <div class="sp-text">CALCVISION</div>
   </div>
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import Footer from "../components/Footer";
 
 import CategorySection from "../components/CategorySection";
 import CalculatorCard  from "../components/CalculatorCard";
@@ -108,6 +109,7 @@ export default function Categories() {
         )}
 
       </div>
+       <Footer />
     </div>
   );
 }

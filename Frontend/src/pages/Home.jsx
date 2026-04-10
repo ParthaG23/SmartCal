@@ -1,20 +1,18 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 
 import Hero from "../components/Hero";
-import CategorySection from "../components/CategorySection";
 import CalculatorCard from "../components/CalculatorCard";
 import Footer from "../components/Footer";
 import { getCalculators } from "../services/api";
 
-import { HiSparkles, HiMagnifyingGlass, HiXMark } from "react-icons/hi2";
+import { HiSparkles, HiMagnifyingGlass, HiXMark,HiArrowRight } from "react-icons/hi2";
 
-const TRENDING_SLUGS = ["emi", "bmi", "gst", "compoundInterest"];
+const TRENDING_SLUGS = ["emi", "bmi", "gst", "compoundInterest", "discount", "age", "sip", "fuelCost", "bmr", "ohms-law", "margin", "sleep-cycle"];
 
 export default function Home() {
 const [calculators, setCalculators] = useState([]);
-const [category, setCategory] = useState("All");
 const [search, setSearch] = useState("");
 const [loading, setLoading] = useState(true);
 
@@ -52,10 +50,6 @@ if (activeSearch) {
 filtered = filtered.filter(c =>
 c.name?.toLowerCase().includes(activeSearch.toLowerCase())
 );
-}
-
-if (category !== "All") {
-filtered = filtered.filter(c => c.category === category);
 }
 
 const Skeleton = ({ count = 8 }) => ( <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6">
@@ -131,86 +125,86 @@ return ( <div className="min-h-screen bg-gray-50 dark:bg-[#09090b] transition-co
         {loading ? (
           <Skeleton count={4} />
         ) : (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-            {trending.map((calc, i) => (
-              <motion.div
-                key={calc.slug}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.07, duration: 0.3 }}
+          <>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+              {trending.map((calc, i) => (
+                <motion.div
+                  key={calc.slug}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.07, duration: 0.3 }}
+                >
+                  <CalculatorCard calculator={{ ...calc, popular: true }} />
+                </motion.div>
+              ))}
+            </div>
+            
+            <div className="mt-10 flex justify-center">
+              <Link
+                to="/categories"
+                className="inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-6 py-3 text-sm font-semibold text-indigo-600 transition-all hover:bg-indigo-100 hover:scale-[1.02] dark:bg-indigo-500/10 dark:text-indigo-400 dark:hover:bg-indigo-500/20"
               >
-                <CalculatorCard calculator={{ ...calc, popular: true }} />
-              </motion.div>
-            ))}
-          </div>
+                Explore More Categories
+                <HiArrowRight className="transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+          </>
         )}
       </motion.section>
     )}
 
-    {/* Category */}
-    <motion.section
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.2 }}
-      className="mt-14"
-    >
-      <CategorySection category={category} setCategory={setCategory} />
-    </motion.section>
+    {/* Conditionally render calculators list (only if searching) */}
+    {activeSearch && (
+      <section id="calculators" className="mt-12 pb-20">
 
-    {/* All calculators */}
-    <section id="calculators" className="mt-8 pb-20">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-base font-bold text-gray-900 dark:text-white/90 tracking-tight">
+            Results for "{activeSearch}"
+          </h2>
 
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-base font-bold text-gray-900 dark:text-white/90 tracking-tight">
-          {activeSearch
-            ? `Results for "${activeSearch}"`
-            : category === "All"
-            ? "All Calculators"
-            : `${category} Calculators`}
-        </h2>
-
-        <span className="text-xs text-gray-400 dark:text-white/30 font-medium">
-          {filtered.length}{" "}
-          {filtered.length === 1 ? "calculator" : "calculators"}
-        </span>
-      </div>
-
-      {loading ? (
-        <Skeleton count={8} />
-      ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 py-24 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 dark:bg-white/5">
-            <HiMagnifyingGlass className="text-2xl text-gray-300 dark:text-white/20" />
-          </div>
-
-          <p className="text-sm font-medium text-gray-400 dark:text-white/30">
-            No calculators found
-          </p>
+          <span className="text-xs text-gray-400 dark:text-white/30 font-medium">
+            {filtered.length}{" "}
+            {filtered.length === 1 ? "calculator" : "calculators"}
+          </span>
         </div>
-      ) : (
-        <motion.div
-          key={`${category}-${activeSearch}`}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
-          className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
-        >
-          {filtered.map((calc, i) => (
-            <motion.div
-              key={calc.slug}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                delay: Math.min(i * 0.04, 0.3),
-                duration: 0.25,
-              }}
-            >
-              <CalculatorCard calculator={calc} />
-            </motion.div>
-          ))}
-        </motion.div>
-      )}
-    </section>
+
+        {loading ? (
+          <Skeleton count={8} />
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center gap-3 py-24 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 dark:bg-white/5">
+              <HiMagnifyingGlass className="text-2xl text-gray-300 dark:text-white/20" />
+            </div>
+
+            <p className="text-sm font-medium text-gray-400 dark:text-white/30">
+              No calculators found
+            </p>
+          </div>
+        ) : (
+          <motion.div
+            key={activeSearch}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
+          >
+            {filtered.map((calc, i) => (
+              <motion.div
+                key={calc.slug}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: Math.min(i * 0.04, 0.3),
+                  duration: 0.25,
+                }}
+              >
+                <CalculatorCard calculator={calc} />
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </section>
+    )}
   </div>
 
   <Footer />

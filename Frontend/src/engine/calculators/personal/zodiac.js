@@ -6,7 +6,8 @@ export default {
   ],
   run: ({ birthDate }) => {
     if (!birthDate) throw new Error("Birth date required");
-    const d = new Date(birthDate), month = d.getMonth() + 1, day = d.getDate();
+    const [yyyy, mm, dd] = birthDate.split("-").map(Number);
+    const d = new Date(yyyy, mm - 1, dd), month = d.getMonth() + 1, day = d.getDate();
     const signs = [
       { sign: "Capricorn", start: [1,1], end: [1,19], element: "Earth", quality: "Cardinal", ruler: "Saturn", stone: "Garnet" },
       { sign: "Aquarius", start: [1,20], end: [2,18], element: "Air", quality: "Fixed", ruler: "Uranus", stone: "Amethyst" },

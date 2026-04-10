@@ -19,6 +19,10 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
+
+  // Skip chrome-extension or other non-http schemes
+  if (!e.request.url.startsWith("http")) return;
+
   e.respondWith(
     caches.match(e.request).then((cached) => {
       const fetched = fetch(e.request)
@@ -29,7 +33,15 @@ self.addEventListener("fetch", (e) => {
           }
           return res;
         })
-        .catch(() => cached);
+        .catch((err) => {
+          if (cached) return cached;
+          // If navigation request fails, try returning index.html for SPA
+          if (e.request.mode === "navigate") {
+            return caches.match("/index.html");
+          }
+          throw err;
+        });
+
       return cached || fetched;
     })
   );
