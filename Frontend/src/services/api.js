@@ -13,13 +13,13 @@ import { getAllCalculators, runCalculation } from "../engine/calculatorEngine";
 export const getCalculators = () =>
   Promise.resolve({ data: { data: getAllCalculators() } });
 
-export const calculate = (type, data) => {
+export const calculate = async (type, data) => {
   try {
-    const { result } = runCalculation(type, data);
-    return Promise.resolve({ data: { result } });
+    const { result } = await runCalculation(type, data);
+    return { data: { result } };
   } catch (err) {
-    return Promise.reject({
+    throw {
       response: { data: { message: err.message } },
-    });
+    };
   }
 };

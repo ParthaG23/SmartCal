@@ -39,7 +39,7 @@ export function getCalculatorBySlug(slug) {
  * @param {object} rawInputs  The values from the form (including _unit keys)
  * @returns {{ result: object }}
  */
-export function runCalculation(slug, rawInputs) {
+export async function runCalculation(slug, rawInputs = {}) {
   const calc = SLUG_MAP[slug];
   if (!calc) throw new Error(`Calculator "${slug}" not found`);
 
@@ -47,7 +47,6 @@ export function runCalculation(slug, rawInputs) {
   const inputs = {};
   for (const [key, value] of Object.entries(rawInputs)) {
     if (key.endsWith("_unit")) {
-      // e.g. "weight_unit" → "weightUnit"
       const fieldName = key.replace(/_unit$/, "");
       inputs[`${fieldName}Unit`] = value;
     } else {
@@ -55,7 +54,7 @@ export function runCalculation(slug, rawInputs) {
     }
   }
 
-  /* ── Execute ────────────────────────────────────────── */
-  const result = calc.run(inputs);
+  /* ── Execute (now supporting async) ──────────────────── */
+  const result = await calc.run(inputs);
   return { result };
 }

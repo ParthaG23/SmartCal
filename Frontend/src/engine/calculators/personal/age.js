@@ -1,43 +1,10 @@
-/**
- * Age Calculator
- *
- * Real zodiac icons via Material Design Icons:
- *   npm install @mdi/react @mdi/js
- *
- * Usage in your UI (e.g. ChartDashboard / results component):
- *
- *   import Icon from "@mdi/react";
- *   import { ZODIAC_MDI_PATH } from "./calculators/age";
- *
- *   <Icon path={ZODIAC_MDI_PATH[result.zodiac_key]} size={1.5} color={accent} />
- *
- * The calculator's `run()` returns `zodiac_key` (e.g. "Aries") so your
- * UI can look up the correct MDI path from the exported map below.
- */
-
+import { getPlanetaryPositions } from "../../../services/astroService";
 import {
-  mdiZodiacAries,
-  mdiZodiacTaurus,
-  mdiZodiacGemini,
-  mdiZodiacCancer,
-  mdiZodiacLeo,
-  mdiZodiacVirgo,
-  mdiZodiacLibra,
-  mdiZodiacScorpio,
-  mdiZodiacSagittarius,
-  mdiZodiacCapricorn,
-  mdiZodiacAquarius,
-  mdiZodiacPisces,
+  mdiZodiacAries, mdiZodiacTaurus, mdiZodiacGemini, mdiZodiacCancer,
+  mdiZodiacLeo, mdiZodiacVirgo, mdiZodiacLibra, mdiZodiacScorpio,
+  mdiZodiacSagittarius, mdiZodiacCapricorn, mdiZodiacAquarius, mdiZodiacPisces,
 } from "@mdi/js";
 
-/* ─── Exported map: zodiac name → MDI SVG path data ─────────────────────────
-   Import this in any component that needs to render the icon:
-
-     import Icon from "@mdi/react";
-     import { ZODIAC_MDI_PATH } from "./calculators/age";
-
-     <Icon path={ZODIAC_MDI_PATH["Leo"]} size={2} color={accent} />
-──────────────────────────────────────────────────────────────────────────── */
 export const ZODIAC_MDI_PATH = {
   Aries:       mdiZodiacAries,
   Taurus:      mdiZodiacTaurus,
@@ -53,14 +20,12 @@ export const ZODIAC_MDI_PATH = {
   Pisces:      mdiZodiacPisces,
 };
 
-/* ─── Unicode fallback symbols (used in plain-text output) ──────────────── */
 const ZODIAC_SYMBOL = {
   Aries: "♈", Taurus: "♉", Gemini: "♊", Cancer: "♋",
   Leo: "♌", Virgo: "♍", Libra: "♎", Scorpio: "♏",
   Sagittarius: "♐", Capricorn: "♑", Aquarius: "♒", Pisces: "♓",
 };
 
-/* ─── Date ranges (for display) ─────────────────────────────────────────── */
 const ZODIAC_DATES = {
   Aries:       "Mar 21 – Apr 19",
   Taurus:      "Apr 20 – May 20",
@@ -76,9 +41,7 @@ const ZODIAC_DATES = {
   Pisces:      "Feb 19 – Mar 20",
 };
 
-/* ─── Zodiac determination (corrected boundaries) ───────────────────────── */
 function getZodiac(month, day) {
-  // month is 1-based, day is 1-based
   if      ((month === 3  && day >= 21) || (month === 4  && day <= 19)) return "Aries";
   else if ((month === 4  && day >= 20) || (month === 5  && day <= 20)) return "Taurus";
   else if ((month === 5  && day >= 21) || (month === 6  && day <= 20)) return "Gemini";
@@ -90,98 +53,84 @@ function getZodiac(month, day) {
   else if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return "Sagittarius";
   else if ((month === 12 && day >= 22) || (month === 1  && day <= 19)) return "Capricorn";
   else if ((month === 1  && day >= 20) || (month === 2  && day <= 18)) return "Aquarius";
-  else                                                                  return "Pisces"; // Feb 19 – Mar 20
+  else                                                                  return "Pisces";
 }
 
-/* ─── Calculator definition ─────────────────────────────────────────────── */
 export default {
   name: "Age Calculator",
   slug: "age",
   category: "Personal",
   description: "Calculate exact age with years, months, days, hours and next birthday countdown",
-
   fields: [
-    {
-      name: "dob",
-      label: "Date of Birth",
-      type: "date",
-    },
+    { name: "dob", label: "Date of Birth", type: "date" },
+    { name: "birthTime", label: "Birth Time (Optional)", type: "time" },
+    { name: "birthPlace", label: "Birth City (Optional)", type: "text", placeholder: "e.g. New Delhi, India" }
   ],
-
-  run: ({ dob }) => {
+  run: async ({ dob, birthTime, birthPlace }) => {
     if (!dob) throw new Error("Date of birth is required");
 
-    // ── Parse as LOCAL date to avoid UTC timezone shift ───────────────────
-    // new Date("1990-05-15") → UTC midnight → shifts to May 14 in UTC+5:30
-    // new Date(1990, 4, 15)  → local midnight → always May 15 ✓
-    const [yyyy, mm, dd] = dob.split("-").map(Number);
-    const birth = new Date(yyyy, mm - 1, dd);
-    const now   = new Date();
+    // ── Flexible Date Parsing ──
+    const parts = dob.split("-").map(Number);
+    let yyyy, mm, dd;
+    
+    if (parts[0] > 1000) {
+      // YYYY-MM-DD (Standard)
+      [yyyy, mm, dd] = parts;
+    } else {
+      // DD-MM-YYYY or MM-DD-YYYY? Usually DD-MM-YYYY on browsers
+      [dd, mm, yyyy] = parts;
+    }
 
-    if (isNaN(birth.getTime()))   throw new Error("Invalid date of birth");
-    if (birth > now)              throw new Error("Date of birth cannot be in the future");
+    const birth = new Date(yyyy, mm - 1, dd), now = new Date();
+    if (isNaN(birth.getTime())) throw new Error("Invalid date of birth");
+    if (birth > now) throw new Error("Date of birth cannot be in the future");
 
-    // ── Exact age components ──────────────────────────────────────────────
-    let years  = now.getFullYear() - birth.getFullYear();
-    let months = now.getMonth()    - birth.getMonth();
-    let days   = now.getDate()     - birth.getDate();
-
+    let years = now.getFullYear() - birth.getFullYear(), months = now.getMonth() - birth.getMonth(), days = now.getDate() - birth.getDate();
     if (days < 0) {
       months--;
-      // How many days were in the month before this one?
       const daysInPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
       days += daysInPrevMonth;
     }
     if (months < 0) { years--; months += 12; }
 
-    // ── Running totals ────────────────────────────────────────────────────
-    const totalDays    = Math.floor((now - birth) / 86_400_000);
-    const totalWeeks   = Math.floor(totalDays / 7);
-    const totalMonths  = years * 12 + months;
-    const totalHours   = totalDays * 24;
-    const totalMinutes = totalHours * 60;
+    const totalDays = Math.floor((now - birth) / 86_400_000), totalWeeks = Math.floor(totalDays / 7), totalMonths = years * 12 + months;
+    const totalHours = totalDays * 24, totalMinutes = totalHours * 60;
 
-    // ── Next birthday ─────────────────────────────────────────────────────
     const nextBirthday = new Date(now.getFullYear(), birth.getMonth(), birth.getDate());
     if (nextBirthday <= now) nextBirthday.setFullYear(now.getFullYear() + 1);
     const daysToNext = Math.ceil((nextBirthday - now) / 86_400_000);
 
-    // ── Day of week born ──────────────────────────────────────────────────
     const WEEK_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const bornOn    = WEEK_DAYS[birth.getDay()];
+    const bornOn = WEEK_DAYS[birth.getDay()];
+    const birthMonth = birth.getMonth() + 1, birthDay = birth.getDate();
 
-    // ── Zodiac — uses local month/day, not UTC-shifted values ─────────────
-    const birthMonth = birth.getMonth() + 1; // 1–12
-    const birthDay   = birth.getDate();      // 1–31
-    const zodiacKey  = getZodiac(birthMonth, birthDay);
+    let hour = 12, min = 0;
+    if (birthTime) {
+      const [h, m] = birthTime.split(":").map(Number);
+      hour = h; min = m;
+    }
+
+    const apiPositions = await getPlanetaryPositions(birthDay, birthMonth, yyyy, hour, min);
+    let apiSign = null;
+    if (apiPositions?.data) {
+      const sun = apiPositions.data.find(p => p.name?.toLowerCase() === "sun");
+      if (sun && sun.sign) {
+        apiSign = sun.sign.charAt(0).toUpperCase() + sun.sign.slice(1).toLowerCase();
+      }
+    }
+
+    const zodiacKey = apiSign || getZodiac(birthMonth, birthDay);
 
     return {
-      // ── Primary display ──────────────────────────────────────────────────
-      age:               `${years} yrs, ${months} mos, ${days} days`,
-
-      // ── Age components ───────────────────────────────────────────────────
-      years,
-      months_remainder:  months,
-      days_remainder:    days,
-
-      // ── Running totals ───────────────────────────────────────────────────
-      total_days:        totalDays.toLocaleString(),
-      total_weeks:       totalWeeks.toLocaleString(),
-      total_months:      totalMonths,
-      total_hours:       totalHours.toLocaleString(),
-      total_minutes:     totalMinutes.toLocaleString(),
-
-      // ── Birthday info ────────────────────────────────────────────────────
-      next_birthday:     `${daysToNext} days`,
-      born_on:           bornOn,
-
-      // ── Zodiac ───────────────────────────────────────────────────────────
-      // zodiac_key   → use with ZODIAC_MDI_PATH[zodiac_key] for the real SVG icon
-      // zodiac       → human-readable label with unicode symbol
-      // zodiac_dates → date range string for display
-      zodiac_key:        zodiacKey,
-      zodiac:            `${ZODIAC_SYMBOL[zodiacKey]} ${zodiacKey}`,
-      zodiac_dates:      ZODIAC_DATES[zodiacKey],
+      age: `${years} yrs, ${months} mos, ${days} days`,
+      status: apiSign ? "✓ Verified Astro-Data" : "Local calculation",
+      years, months_remainder: months, days_remainder: days,
+      total_days: totalDays.toLocaleString(), total_weeks: totalWeeks.toLocaleString(), total_months: totalMonths,
+      total_hours: totalHours.toLocaleString(), total_minutes: totalMinutes.toLocaleString(),
+      next_birthday: `${daysToNext} days`, born_on: bornOn,
+      zodiac_key: zodiacKey,
+      zodiac: `${ZODIAC_SYMBOL[zodiacKey]} ${zodiacKey}`,
+      zodiac_dates: ZODIAC_DATES[zodiacKey],
     };
   },
 };
